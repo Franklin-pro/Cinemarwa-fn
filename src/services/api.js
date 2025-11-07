@@ -144,6 +144,25 @@ export const searchMovies = async (query) => {
   }
 };
 
+/**
+ * Search movies from backend database
+ * @param {string} query - Search query string
+ * @returns {Promise<Array>} Array of movies from backend database
+ */
+export const searchBackendMovies = async (query) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/movies/search?query=${encodeURIComponent(query)}`
+    );
+    const data = await response.json();
+    // Handle both response formats
+    return data.data || data.results || [];
+  } catch (error) {
+    console.error("Error searching backend movies:", error);
+    return [];
+  }
+};
+
 export const getMovieImages = async (path, size = 'original') => {
     if(!path)
         return "https://via.placeholder.com/400x600?text=No+image+Available";
