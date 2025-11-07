@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Upload, Film, AlertCircle, CheckCircle, Loader, Eye, Download } from 'lucide-react';
+import { Upload, AlertCircle, CheckCircle, Loader, Eye, Download } from 'lucide-react';
 import { moviesService } from '../../services/api/movies';
 
 function UploadMovie() {
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+
 
   const CATEGORIES = ["Action", "Comedy", "Drama", "Horror", "Thriller", "Romance", "Documentary", "Animation", "Sci-Fi", "Fantasy"];
 
