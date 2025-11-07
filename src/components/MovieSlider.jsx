@@ -5,19 +5,16 @@ import {
 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { useMovies } from "../context/MovieContext";
-import { useSelector } from "react-redux";
 
 function MovieSlider({ title, subtitle = "", movies }) {
   const sliderRef = useRef(null);
   const {openMovieDetails} = useMovies();
   const [hoveblueMovieId,setHoveblueMovieId] = useState(null)
-  const { user } = useSelector((state) => state.auth);
+
   const handleMovieClick = (movieId)=>{
     openMovieDetails(movieId);
-    if(user ===null){
-      alert("Please log in to view movie details.");
-      return;
-
+    if(hoveblueMovieId){
+      setHoveblueMovieId(null)
     }
   }
 
