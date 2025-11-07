@@ -3,7 +3,7 @@ import { Search, Menu, X, User, LogOut, Settings, BarChart3 } from "lucide-react
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../store/slices/authSlice";
-import { searchMovies } from "../services/api";
+import { searchMovies, searchBackendMovies } from "../services/api";
 import { useMovies } from "../context/MovieContext";
 
 const Navbar = () => {
@@ -14,6 +14,7 @@ const Navbar = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [searchSource, setSearchSource] = useState("tmdb"); // 'tmdb' or 'backend'
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -93,7 +94,12 @@ const Navbar = () => {
     setSearchError(null);
 
     try {
-      const data = await searchMovies(searchQuery);
+      let data;
+      if (searchSource === "backend") {
+        data = await searchBackendMovies(searchQuery);
+      } else {
+        data = await searchMovies(searchQuery);
+      }
       setResults(data || []);
       setSearchError(data.length === 0 ? "No results found" : null);
     } catch (error) {
@@ -103,7 +109,7 @@ const Navbar = () => {
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [searchSource]);
 
   // Handle selecting a movie
   const handleMovieSelect = (movie) => {
@@ -170,16 +176,17 @@ const Navbar = () => {
         </nav>
 
         {/* Search Bar (Desktop) */}
-        <div className="hidden md:block relative w-60">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search movies..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full px-4 py-2 pr-10 rounded-full text-sm bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-neutral-400"
-            />
-            <Search className="absolute right-3 top-2.5 w-4 h-4 text-neutral-400" />
+        <div className="hidden md:flex items-center gap-2">
+          <div className="relative w-60">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search movies..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="w-full px-4 py-2 pr-10 rounded-full text-sm bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-neutral-400"
+              />
+              <Search className="absolute right-3 top-2.5 w-4 h-4 text-neutral-400" />
 
             {isSearching && (
               <div className="absolute right-10 top-2.5">
@@ -247,6 +254,34 @@ const Navbar = () => {
               )}
             </div>
           )}
+            </div>
+
+          {/* Search Source Toggle */}
+          <div className="flex items-center bg-neutral-800 rounded-full px-3 py-2 gap-2">
+            <button
+              onClick={() => setSearchSource("tmdb")}
+              className={`text-xs px-2 py-1 rounded transition ${
+                searchSource === "tmdb"
+                  ? "bg-blue-500 text-white"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+              title="Search using TMDB database"
+            >
+              TMDB
+            </button>
+            <div className="w-px h-4 bg-neutral-600"></div>
+            <button
+              onClick={() => setSearchSource("backend")}
+              className={`text-xs px-2 py-1 rounded transition ${
+                searchSource === "backend"
+                  ? "bg-blue-500 text-white"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+              title="Search using backend database"
+            >
+              Database
+            </button>
+          </div>
         </div>
 
         {/* Desktop Auth Section */}
