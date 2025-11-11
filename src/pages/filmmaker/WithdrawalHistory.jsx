@@ -11,10 +11,10 @@ function WithdrawalHistory() {
   const [filterStatus, setFilterStatus] = useState('all');
 
   const STATUS_COLORS = {
-    pending: 'bg-yellow-500/20 text-yellow-400',
+    pending: 'bg-blue-500/20 text-blue-400',
     processing: 'bg-blue-500/20 text-blue-400',
     completed: 'bg-green-500/20 text-green-400',
-    failed: 'bg-red-500/20 text-red-400',
+    failed: 'bg-blue-500/20 text-blue-400',
   };
 
   // Helper function to safely convert to number and format currency
@@ -54,7 +54,7 @@ function WithdrawalHistory() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-12 h-12 animate-spin mx-auto mb-4 text-yellow-500" />
+          <Loader className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500" />
           <p className="text-gray-400">Loading withdrawal history...</p>
         </div>
       </div>
@@ -74,7 +74,7 @@ function WithdrawalHistory() {
             Back to Dashboard
           </button>
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-            <History className="w-8 h-8 text-yellow-400" />
+            <History className="w-8 h-8 text-blue-400" />
             Withdrawal History
           </h1>
           <p className="text-gray-400">View all your withdrawal requests and transactions</p>
@@ -88,7 +88,7 @@ function WithdrawalHistory() {
           </div>
           <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-6">
             <p className="text-gray-400 text-sm mb-2">Pending Withdrawals</p>
-            <p className="text-3xl font-bold text-yellow-400">${formatCurrency(stats.pending)}</p>
+            <p className="text-3xl font-bold text-blue-400">${formatCurrency(stats.pending)}</p>
           </div>
           <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-6">
             <p className="text-gray-400 text-sm mb-2">Processing</p>
@@ -98,9 +98,9 @@ function WithdrawalHistory() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 bg-red-500/10 border border-red-500/50 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-            <p className="text-red-200">{error}</p>
+          <div className="mb-6 bg-blue-500/10 border border-blue-500/50 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+            <p className="text-blue-200">{error}</p>
           </div>
         )}
 
@@ -112,7 +112,7 @@ function WithdrawalHistory() {
               onClick={() => setFilterStatus(status)}
               className={`px-4 py-2 font-semibold transition-colors capitalize ${
                 filterStatus === status
-                  ? 'text-yellow-400 border-b-2 border-yellow-400'
+                  ? 'text-blue-400 border-b-2 border-blue-400'
                   : 'text-gray-400 hover:text-gray-300'
               }`}
             >
@@ -129,7 +129,7 @@ function WithdrawalHistory() {
               <p className="text-gray-400 mb-6">No {filterStatus !== 'all' ? filterStatus : ''} withdrawals found</p>
               <button
                 onClick={() => navigate('/filmmaker/withdrawal-request')}
-                className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-lg font-semibold"
+                className="bg-blue-500 hover:bg-blue-600 text-black px-6 py-2 rounded-lg font-semibold"
               >
                 Request a Withdrawal
               </button>
@@ -160,7 +160,7 @@ function WithdrawalHistory() {
                           </p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 font-semibold text-yellow-400">
+                      <td className="px-6 py-4 font-semibold text-blue-400">
                         ${formatCurrency(withdrawal.amount || 0)}
                         <p className="text-xs text-gray-400 font-normal">
                           Fee: ${formatCurrency((withdrawal.amount || 0) * 0.05)}
@@ -204,7 +204,7 @@ function WithdrawalHistory() {
           <div className="mt-8 flex justify-center">
             <button
               onClick={() => navigate('/filmmaker/withdrawal-request')}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black px-8 py-3 rounded-lg font-semibold transition-all"
+              className="bg-blue-500 hover:bg-blue-600 text-black px-8 py-3 rounded-lg font-semibold transition-all"
             >
               Request New Withdrawal
             </button>

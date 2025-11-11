@@ -24,7 +24,7 @@ function PaymentMethodSetup() {
     country: 'US',
     // Stripe
     stripeAccountId: '',
-    paymentMethod: 'momo', // 'momo', 'bank', 'stripe'
+    paymentMethod: 'momo', // 'momo', 'bank_transfer', 'stripe'
   });
 
   useEffect(() => {
@@ -95,9 +95,9 @@ function PaymentMethodSetup() {
         setError('Please enter a valid phone number (e.g., +256701234567)');
         return false;
       }
-    } else if (formData.paymentMethod === 'bank') {
+    } else if (formData.paymentMethod === 'bank_transfer') {
       if (!formData.bankAccountHolder || !formData.bankName || !formData.accountNumber) {
-        setError('Please fill in all bank account details');
+        setError('Please fill in all bank_transfer account details');
         return false;
       }
       if (formData.accountNumber.length < 8) {
@@ -136,7 +136,7 @@ function PaymentMethodSetup() {
 
       if (formData.paymentMethod === 'momo') {
         payload.momoPhoneNumber = formData.momoPhoneNumber;
-      } else if (formData.paymentMethod === 'bank') {
+      } else if (formData.paymentMethod === 'bank_transfer') {
         payload.bankAccountHolder = formData.bankAccountHolder;
         payload.bankName = formData.bankName;
         payload.accountNumber = formData.accountNumber;
@@ -169,7 +169,7 @@ function PaymentMethodSetup() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-12 h-12 animate-spin mx-auto mb-4 text-yellow-500" />
+          <Loader className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500" />
           <p className="text-gray-400">Loading payment method...</p>
         </div>
       </div>
@@ -188,7 +188,7 @@ function PaymentMethodSetup() {
             ← Back to Dashboard
           </button>
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-            <CreditCard className="w-8 h-8 text-yellow-400" />
+            <CreditCard className="w-8 h-8 text-blue-400" />
             Payment Method Setup
           </h1>
           <p className="text-gray-400">Add or update your payment method for withdrawals</p>
@@ -196,9 +196,9 @@ function PaymentMethodSetup() {
 
         {/* Alerts */}
         {error && (
-          <div className="mb-6 bg-red-500/10 border border-red-500/50 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-            <p className="text-red-200">{error}</p>
+          <div className="mb-6 bg-blue-500/10 border border-blue-500/50 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+            <p className="text-blue-200">{error}</p>
           </div>
         )}
 
@@ -225,7 +225,7 @@ function PaymentMethodSetup() {
                   <span className="text-gray-500">Phone Number:</span> {paymentMethod.paymentDetails.momo}
                 </p>
               )}
-              {paymentMethod.currentMethod === 'bank' && paymentMethod.paymentDetails?.allMethods?.bankDetails && (
+              {paymentMethod.currentMethod === 'bank_transfer' && paymentMethod.paymentDetails?.allMethods?.bankDetails && (
                 <>
                   <p className="text-gray-300">
                     <span className="text-gray-500">Bank:</span> {paymentMethod.paymentDetails.allMethods.bankDetails.bankName}
@@ -277,21 +277,21 @@ function PaymentMethodSetup() {
               {/* Bank Transfer */}
               <label className="flex items-start gap-3 p-4 border border-gray-700 rounded-lg hover:border-gray-600 cursor-pointer transition"
                 style={{
-                  backgroundColor: formData.paymentMethod === 'bank' ? 'rgba(234, 179, 8, 0.1)' : 'transparent',
-                  borderColor: formData.paymentMethod === 'bank' ? 'rgba(234, 179, 8, 0.5)' : 'inherit',
+                  backgroundColor: formData.paymentMethod === 'bank_transfer' ? 'rgba(234, 179, 8, 0.1)' : 'transparent',
+                  borderColor: formData.paymentMethod === 'bank_transfer' ? 'rgba(234, 179, 8, 0.5)' : 'inherit',
                 }}
               >
                 <input
                   type="radio"
                   name="paymentMethod"
-                  value="bank"
-                  checked={formData.paymentMethod === 'bank'}
+                  value="bank_transfer"
+                  checked={formData.paymentMethod === 'bank_transfer'}
                   onChange={handleChange}
                   className="mt-1"
                 />
                 <div className="flex-1">
                   <p className="font-semibold text-white">Bank Transfer</p>
-                  <p className="text-xs text-gray-400">Direct bank account deposit (ACH, Wire Transfer)</p>
+                  <p className="text-xs text-gray-400">Direct bank_transfer account deposit (ACH, Wire Transfer)</p>
                 </div>
               </label>
 
@@ -319,7 +319,7 @@ function PaymentMethodSetup() {
           </div>
 
           {/* Bank Transfer Form */}
-          {formData.paymentMethod === 'bank' && (
+          {formData.paymentMethod === 'bank_transfer' && (
             <div className="bg-gray-800/40 border border-gray-700 rounded-lg p-6 space-y-4">
               <h3 className="font-semibold text-white mb-4">Bank Account Details</h3>
 
@@ -334,7 +334,7 @@ function PaymentMethodSetup() {
                     value={formData.bankAccountHolder}
                     onChange={handleChange}
                     placeholder="John Doe"
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -348,7 +348,7 @@ function PaymentMethodSetup() {
                     value={formData.bankName}
                     onChange={handleChange}
                     placeholder="Chase Bank"
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -362,7 +362,7 @@ function PaymentMethodSetup() {
                     value={formData.accountNumber}
                     onChange={handleChange}
                     placeholder="••••••••••••••••"
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -374,7 +374,7 @@ function PaymentMethodSetup() {
                     name="accountType"
                     value={formData.accountType}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="checking">Checking</option>
                     <option value="savings">Savings</option>
@@ -392,7 +392,7 @@ function PaymentMethodSetup() {
                     value={formData.routingNumber}
                     onChange={handleChange}
                     placeholder="000000000"
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -406,7 +406,7 @@ function PaymentMethodSetup() {
                     value={formData.swiftCode}
                     onChange={handleChange}
                     placeholder="CHASUS33"
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -418,7 +418,7 @@ function PaymentMethodSetup() {
                     name="country"
                     value={formData.country}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="US">United States</option>
                     <option value="CA">Canada</option>
@@ -451,7 +451,7 @@ function PaymentMethodSetup() {
                   value={formData.momoPhoneNumber}
                   onChange={handleChange}
                   placeholder="+256701234567"
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 />
                 <p className="text-xs text-gray-400 mt-1">
                   Enter your MTN Mobile Money phone number in international format (e.g., +256701234567)
@@ -485,13 +485,13 @@ function PaymentMethodSetup() {
                   value={formData.stripeAccountId}
                   onChange={handleChange}
                   placeholder="acct_1234567890ABCDEFGH"
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 text-sm text-blue-200">
                 <p className="font-semibold mb-2">Stripe Setup:</p>
-                <p>Connect your Stripe Express account to receive payouts directly to your bank.</p>
+                <p>Connect your Stripe Express account to receive payouts directly to your bank_transfer.</p>
               </div>
             </div>
           )}
@@ -508,7 +508,7 @@ function PaymentMethodSetup() {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-600 disabled:opacity-50 text-black px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+              className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-600 disabled:opacity-50 text-black px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>

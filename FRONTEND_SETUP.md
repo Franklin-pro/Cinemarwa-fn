@@ -309,9 +309,9 @@ dispatch(getPaymentHistory())
 ## Styling with Tailwind CSS
 
 ### Theme Colors
-- Primary: Yellow (`from-yellow-400 to-red-500`)
+- Primary: blue (`from-blue-400 to-blue-500`)
 - Background: Dark gray (`gray-950 to black`)
-- Accents: Yellow/Red gradient
+- Accents: blue/blue gradient
 
 ### Responsive Design
 - Mobile-first approach

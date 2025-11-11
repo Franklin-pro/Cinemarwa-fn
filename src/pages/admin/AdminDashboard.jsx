@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
+
 import { Users, Film, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
 
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
 
-  const pendingMovies = [
-    { id: 1, title: 'Film 1', filmmaker: 'John Doe', status: 'pending' },
-    { id: 2, title: 'Film 2', filmmaker: 'Jane Smith', status: 'pending' },
-  ];
 
   const stats = [
     { icon: Users, label: 'Total Users', value: '1,234' },
@@ -32,7 +27,7 @@ function AdminDashboard() {
               key={i}
               className="bg-gray-800/60 border border-gray-700 rounded-xl p-6"
             >
-              <stat.icon className="w-8 h-8 text-yellow-400 mb-3" />
+              <stat.icon className="w-8 h-8 text-blue-400 mb-3" />
               <p className="text-gray-400 text-sm mb-1">{stat.label}</p>
               <p className="text-2xl font-bold">{stat.value}</p>
             </div>
@@ -47,7 +42,7 @@ function AdminDashboard() {
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-3 font-semibold border-b-2 transition-all capitalize ${
                 activeTab === tab
-                  ? 'border-yellow-400 text-yellow-400'
+                  ? 'border-blue-400 text-blue-400'
                   : 'border-transparent text-gray-400 hover:text-gray-300'
               }`}
             >
@@ -75,7 +70,7 @@ function AdminDashboard() {
                       <CheckCircle className="w-5 h-5" />
                       Approve
                     </button>
-                    <button className="flex items-center gap-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg transition-all">
+                    <button className="flex items-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2 rounded-lg transition-all">
                       <AlertCircle className="w-5 h-5" />
                       Reject
                     </button>

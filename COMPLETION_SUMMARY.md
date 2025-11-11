@@ -375,7 +375,7 @@ react-i18next: ^13.x
 - Platform analytics placeholder
 
 ### ✅ UI/UX
-- Dark theme with yellow/red accents
+- Dark theme with blue/blue accents
 - Responsive design (mobile-first)
 - Form validation
 - Error messages

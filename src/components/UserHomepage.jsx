@@ -59,7 +59,7 @@ function UserHomepage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-950">
-        <div className="text-red-500 text-center">
+        <div className="text-blue-500 text-center">
           <p className="text-lg mb-2">{error}</p>
           <p className="text-sm text-gray-400">Please try refreshing the page</p>
         </div>

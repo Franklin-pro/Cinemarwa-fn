@@ -32,7 +32,7 @@ function Profile() {
         <div className="bg-gray-800/60 border border-gray-700 rounded-2xl p-8 space-y-6">
           {/* User Avatar Section */}
           <div className="flex items-center gap-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-red-500 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center">
               <User className="w-10 h-10 text-white" />
             </div>
             <div>
@@ -47,7 +47,7 @@ function Profile() {
           <div className="space-y-4 border-t border-gray-700 pt-6">
             {/* Email */}
             <div className="flex items-center gap-3">
-              <Mail className="w-5 h-5 text-yellow-400" />
+              <Mail className="w-5 h-5 text-blue-400" />
               <div>
                 <p className="text-gray-400 text-sm">Email</p>
                 <p className="font-medium">{user.email}</p>
@@ -69,14 +69,14 @@ function Profile() {
           <div className="flex gap-3 border-t border-gray-700 pt-6">
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="flex-1 flex items-center justify-center gap-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 px-4 py-2.5 rounded-lg transition-all"
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2.5 rounded-lg transition-all"
             >
               <Settings className="w-5 h-5" />
               Edit Profile
             </button>
             <button
               onClick={handleLogout}
-              className="flex-1 flex items-center justify-center gap-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2.5 rounded-lg transition-all"
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2.5 rounded-lg transition-all"
             >
               <LogOut className="w-5 h-5" />
               Logout
@@ -91,9 +91,9 @@ function Profile() {
         </div>
 
         {/* Danger Zone */}
-        <div className="mt-8 bg-red-500/10 border border-red-500/30 rounded-2xl p-6">
-          <h3 className="text-lg font-bold text-red-400 mb-3">Danger Zone</h3>
-          <button className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg transition-all">
+        <div className="mt-8 bg-blue-500/10 border border-blue-500/30 rounded-2xl p-6">
+          <h3 className="text-lg font-bold text-blue-400 mb-3">Danger Zone</h3>
+          <button className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-4 py-2 rounded-lg transition-all">
             Delete Account
           </button>
         </div>

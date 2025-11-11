@@ -9,7 +9,7 @@ export default function PermissionGate() {
     <div className="min-h-screen flex flex-col items-center justify-center  from-gray-950 via-gray-900 to-black text-white px-4">
       {/* Lock Icon */}
       <div className="bg-gray-800/60 p-6 rounded-full mb-6 border border-gray-700 shadow-lg">
-        <Lock className="w-14 h-14 text-yellow-400" />
+        <Lock className="w-14 h-14 text-blue-400" />
       </div>
 
       {/* Message */}
@@ -33,7 +33,7 @@ export default function PermissionGate() {
 
         <button
           onClick={() => navigate("/upgrade")}
-          className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-2.5 rounded-xl font-semibold transition-all duration-200"
+          className="bg-blue-500 hover:bg-blue-400 text-black px-6 py-2.5 rounded-xl font-semibold transition-all duration-200"
         >
           Upgrade Plan
         </button>

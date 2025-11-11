@@ -112,8 +112,8 @@ function GenreSection() {
                   <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-1">
-                        <Star className="w-4 h-4 text-yellow-500" />
-                        <span className="text-yellow-500 text-sm font-medium">
+                        <Star className="w-4 h-4 text-blue-500" />
+                        <span className="text-blue-500 text-sm font-medium">
                           {movie.vote_average?.toFixed(1) || 'N/A'}
                         </span>
                       </div>
@@ -134,8 +134,8 @@ function GenreSection() {
                   </h3>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1">
-                      <Star className="w-3 h-3 text-yellow-500" />
-                      <span className="text-yellow-500 text-xs">
+                      <Star className="w-3 h-3 text-blue-500" />
+                      <span className="text-blue-500 text-xs">
                         {movie.vote_average?.toFixed(1) || 'N/A'}
                       </span>
                     </div>

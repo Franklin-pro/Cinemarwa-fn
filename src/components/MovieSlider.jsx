@@ -31,28 +31,30 @@ if(!movies || movies.length === 0){
   return null;
 }
   return (
-    <section className="py-12">
+    <section className="py-8 md:py-12">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex justify-between items-baseline mb-8">
-          <div className="text-2xl font-bold text-white md:text-3xl">
+        <div className="flex justify-between items-start md:items-baseline mb-4 md:mb-8 gap-4">
+          <div className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
             <h2>{title}</h2>
             {subtitle && (
-              <p className="text-neutral-400 text-sm mt-1">{subtitle}</p>
+              <p className="text-neutral-400 text-xs md:text-sm mt-1">{subtitle}</p>
             )}
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-1 md:space-x-2 flex-shrink-0">
             <button
               onClick={() => scroll("left")}
-              className="bg-neutral-800/70 hover:bg-neutral-700 rounded-full p-1"
+              className="bg-neutral-800/70 hover:bg-neutral-700 rounded-full p-1 md:p-2 transition-all"
+              aria-label="Scroll left"
             >
-              <ChevronLeft className="text-white" />
+              <ChevronLeft className="text-white w-4 h-4 md:w-5 md:h-5" />
             </button>
             <button
               onClick={() => scroll("right")}
-              className="bg-neutral-800/70 hover:bg-neutral-700 rounded-full p-1"
+              className="bg-neutral-800/70 hover:bg-neutral-700 rounded-full p-1 md:p-2 transition-all"
+              aria-label="Scroll right"
             >
-              <ChevronRight className="text-white" />
+              <ChevronRight className="text-white w-4 h-4 md:w-5 md:h-5" />
             </button>
           </div>
         </div>
@@ -61,7 +63,7 @@ if(!movies || movies.length === 0){
         <div className="relative">
           <div
             ref={sliderRef}
-            className="flex space-x-4 overflow-x-auto scrollbar-hide pb-4 snap-x scroll-smooth"
+            className="flex space-x-2 md:space-x-3 lg:space-x-4 overflow-x-auto scrollbar-hide pb-2 md:pb-4 snap-x scroll-smooth"
           >
             {movies && movies.length > 0 ? (
               movies.map((movie) => (
@@ -70,7 +72,7 @@ if(!movies || movies.length === 0){
                   onMouseEnter={()=>setHoveblueMovieId(movie.id)}
                   onMouseLeave={()=>setHoveblueMovieId(null)}
                   onClick={() => handleMovieClick(movie.id || movie._id)}
-                  className="min-w-[200px] md:min-w-[240px] snap-start relative group cursor-pointer flex-shrink-0"
+                  className="min-w-[140px] sm:min-w-[160px] md:min-w-[200px] lg:min-w-[240px] snap-start relative group cursor-pointer flex-shrink-0"
                 >
                   <div className="rounded-lg overflow-hidden bg-neutral-800">
                     <div className="relative aspect-[2/3]">
@@ -91,22 +93,22 @@ if(!movies || movies.length === 0){
                       />
 
                       {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 opacity-0 group-hover:opacity-100 transition-all duration-300 via-neutral-900/40 to-transparent flex justify-end flex-col">
-                        <div className="transform translate-y-4 pb-4 group-hover:translate-y-0 transition-transform duration-300 space-y-3 px-3">
+                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/95 opacity-0 group-hover:opacity-100 transition-all duration-300 via-neutral-900/40 to-transparent flex justify-end flex-col">
+                        <div className="transform translate-y-3 md:translate-y-4 pb-2 md:pb-4 group-hover:translate-y-0 transition-transform duration-300 space-y-2 md:space-y-3 px-2 md:px-3">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-1">
-                              <Star className="w-4 h-4 text-yellow-500" />
-                              <span className="text-yellow-500 text-sm font-medium">
+                              <Star className="w-3 md:w-4 h-3 md:h-4 text-blue-500" />
+                              <span className="text-blue-500 text-xs md:text-sm font-medium">
                                 {movie.vote_average?.toFixed(1) || movie.avgRating?.toFixed(1) || "N/A"}
                               </span>
                             </div>
-                            <span className="text-neutral-400 text-sm">
+                            <span className="text-neutral-400 text-xs md:text-sm">
                               {movie.release_date
                                 ? new Date(movie.release_date).getFullYear()
                                 : "TBA"}
                             </span>
                           </div>
-                          <button onClick={() => handleMovieClick(movie.id)} className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md items-center justify-center gap-1 transition-all text-sm">
+                          <button onClick={() => handleMovieClick(movie.id)} className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-1.5 md:py-2 px-2 rounded-md flex items-center justify-center gap-1 transition-all text-xs md:text-sm">
                             View Details
                           </button>
                         </div>
@@ -115,14 +117,14 @@ if(!movies || movies.length === 0){
                   </div>
 
                   {/* Movie Info */}
-                  <div className="mt-3">
-                    <h3 className="text-white text-sm font-medium truncate">
+                  <div className="mt-2 md:mt-3">
+                    <h3 className="text-white text-xs md:text-sm font-medium truncate">
                       {movie.title || movie.name}
                     </h3>
-                    <div className="flex items-center gap-4 justify-between mt-1">
+                    <div className="flex items-center gap-2 md:gap-4 justify-between mt-1">
                       <div className="flex items-center space-x-1">
-                        <Star className="w-3 h-3 text-yellow-500" />
-                        <span className="text-yellow-500 text-xs font-medium">
+                        <Star className="w-2.5 md:w-3 h-2.5 md:h-3 text-blue-500" />
+                        <span className="text-blue-500 text-xs font-medium">
                           {movie.vote_average?.toFixed(1) || movie.avgRating?.toFixed(1) || "N/A"}
                         </span>
                       </div>

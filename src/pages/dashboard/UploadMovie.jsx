@@ -226,27 +226,27 @@ function UploadMovie() {
         <form onSubmit={handleSubmit} className="bg-gray-800/60 border border-gray-700 rounded-2xl p-8 space-y-6">
           {/* Submit Error */}
           {errors.submit && (
-            <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/50 rounded-lg p-4">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-              <p className="text-sm text-red-300">{errors.submit}</p>
+            <div className="flex items-center gap-3 bg-blue-500/10 border border-blue-500/50 rounded-lg p-4">
+              <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
+              <p className="text-sm text-blue-300">{errors.submit}</p>
             </div>
           )}
 
           {/* Title */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Title <span className="text-red-400">*</span></label>
+              <label className="block text-sm font-medium mb-2">Title <span className="text-blue-400">*</span></label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Movie title"
-                className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                  errors.title ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                  errors.title ? 'border-blue-500' : 'border-gray-600'
                 }`}
               />
-              {errors.title && <p className="text-red-400 text-xs mt-1">{errors.title}</p>}
+              {errors.title && <p className="text-blue-400 text-xs mt-1">{errors.title}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Original Title</label>
@@ -256,25 +256,25 @@ function UploadMovie() {
                 value={formData.original_title}
                 onChange={handleChange}
                 placeholder="Original title"
-                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-yellow-400"
+                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-blue-400"
               />
             </div>
           </div>
 
           {/* Overview */}
           <div>
-            <label className="block text-sm font-medium mb-2">Overview/Synopsis <span className="text-red-400">*</span></label>
+            <label className="block text-sm font-medium mb-2">Overview/Synopsis <span className="text-blue-400">*</span></label>
             <textarea
               name="overview"
               value={formData.overview}
               onChange={handleChange}
               placeholder="Detailed movie synopsis (min 20 characters)"
               rows="4"
-              className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                errors.overview ? 'border-red-500' : 'border-gray-600'
+              className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                errors.overview ? 'border-blue-500' : 'border-gray-600'
               }`}
             />
-            {errors.overview && <p className="text-red-400 text-xs mt-1">{errors.overview}</p>}
+            {errors.overview && <p className="text-blue-400 text-xs mt-1">{errors.overview}</p>}
           </div>
 
           {/* Release Date and Language */}
@@ -286,7 +286,7 @@ function UploadMovie() {
                 name="release_date"
                 value={formData.release_date}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-yellow-400"
+                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-blue-400"
               />
             </div>
             <div>
@@ -297,7 +297,7 @@ function UploadMovie() {
                 value={formData.language}
                 onChange={handleChange}
                 placeholder="en"
-                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-yellow-400"
+                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-blue-400"
               />
             </div>
           </div>
@@ -306,9 +306,9 @@ function UploadMovie() {
           <div className="grid grid-cols-2 gap-4">
             {/* Poster Image */}
             <div>
-              <label className="block text-sm font-medium mb-2">Poster Image <span className="text-red-400">*</span></label>
+              <label className="block text-sm font-medium mb-2">Poster Image <span className="text-blue-400">*</span></label>
               <div className={`border-2 border-dashed rounded-lg p-4 text-center transition-all cursor-pointer ${
-                errors.posterFile ? 'border-red-500 bg-red-500/5' : 'border-gray-600 hover:border-yellow-400'
+                errors.posterFile ? 'border-blue-500 bg-blue-500/5' : 'border-gray-600 hover:border-blue-400'
               }`}>
                 <input
                   type="file"
@@ -325,14 +325,14 @@ function UploadMovie() {
                   <p className="text-gray-400 text-xs mt-1">PNG, JPG, WebP (max 10MB)</p>
                 </label>
               </div>
-              {errors.posterFile && <p className="text-red-400 text-xs mt-1">{errors.posterFile}</p>}
+              {errors.posterFile && <p className="text-blue-400 text-xs mt-1">{errors.posterFile}</p>}
             </div>
 
             {/* Backdrop Image */}
             <div>
-              <label className="block text-sm font-medium mb-2">Backdrop Image <span className="text-red-400">*</span></label>
+              <label className="block text-sm font-medium mb-2">Backdrop Image <span className="text-blue-400">*</span></label>
               <div className={`border-2 border-dashed rounded-lg p-4 text-center transition-all cursor-pointer ${
-                errors.backdropFile ? 'border-red-500 bg-red-500/5' : 'border-gray-600 hover:border-yellow-400'
+                errors.backdropFile ? 'border-blue-500 bg-blue-500/5' : 'border-gray-600 hover:border-blue-400'
               }`}>
                 <input
                   type="file"
@@ -349,13 +349,13 @@ function UploadMovie() {
                   <p className="text-gray-400 text-xs mt-1">PNG, JPG, WebP (max 10MB)</p>
                 </label>
               </div>
-              {errors.backdropFile && <p className="text-red-400 text-xs mt-1">{errors.backdropFile}</p>}
+              {errors.backdropFile && <p className="text-blue-400 text-xs mt-1">{errors.backdropFile}</p>}
             </div>
           </div>
 
           {/* Categories */}
           <div>
-            <label className="block text-sm font-medium mb-3">Categories <span className="text-red-400">*</span></label>
+            <label className="block text-sm font-medium mb-3">Categories <span className="text-blue-400">*</span></label>
             <div className="grid grid-cols-3 gap-2">
               {CATEGORIES.map((category) => (
                 <label key={category} className="flex items-center gap-2 p-2 border border-gray-600 rounded-lg hover:bg-gray-700/50 transition-all cursor-pointer">
@@ -363,13 +363,13 @@ function UploadMovie() {
                     type="checkbox"
                     checked={formData.categories.includes(category)}
                     onChange={() => handleCategoryChange(category)}
-                    className="w-4 h-4 accent-yellow-400"
+                    className="w-4 h-4 accent-blue-400"
                   />
                   <span className="text-sm">{category}</span>
                 </label>
               ))}
             </div>
-            {errors.categories && <p className="text-red-400 text-xs mt-1">{errors.categories}</p>}
+            {errors.categories && <p className="text-blue-400 text-xs mt-1">{errors.categories}</p>}
           </div>
 
           {/* Tags and Keywords */}
@@ -382,7 +382,7 @@ function UploadMovie() {
                 value={formData.tags}
                 onChange={handleChange}
                 placeholder="Comma separated tags"
-                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-yellow-400"
+                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-blue-400"
               />
             </div>
             <div>
@@ -393,7 +393,7 @@ function UploadMovie() {
                 value={formData.keywords}
                 onChange={handleChange}
                 placeholder="Comma separated keywords"
-                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-yellow-400"
+                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-blue-400"
               />
             </div>
           </div>
@@ -411,7 +411,7 @@ function UploadMovie() {
                 name="currency"
                 value={formData.currency}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-yellow-400"
+                className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-blue-400"
               >
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
@@ -435,12 +435,12 @@ function UploadMovie() {
                   placeholder="0.00"
                   step="0.01"
                   min="0"
-                  className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                    errors.viewPrice ? 'border-red-500' : 'border-gray-600'
+                  className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                    errors.viewPrice ? 'border-blue-500' : 'border-gray-600'
                   }`}
                 />
                 <p className="text-gray-400 text-xs mt-1">Price to watch online (0 = free)</p>
-                {errors.viewPrice && <p className="text-red-400 text-xs mt-1">{errors.viewPrice}</p>}
+                {errors.viewPrice && <p className="text-blue-400 text-xs mt-1">{errors.viewPrice}</p>}
               </div>
 
               {/* Download Price */}
@@ -458,12 +458,12 @@ function UploadMovie() {
                   placeholder="0.00"
                   step="0.01"
                   min="0"
-                  className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                    errors.downloadPrice ? 'border-red-500' : 'border-gray-600'
+                  className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                    errors.downloadPrice ? 'border-blue-500' : 'border-gray-600'
                   }`}
                 />
                 <p className="text-gray-400 text-xs mt-1">Price to download (0 = free)</p>
-                {errors.downloadPrice && <p className="text-red-400 text-xs mt-1">{errors.downloadPrice}</p>}
+                {errors.downloadPrice && <p className="text-blue-400 text-xs mt-1">{errors.downloadPrice}</p>}
               </div>
 
               {/* Royalty Percentage */}
@@ -478,12 +478,12 @@ function UploadMovie() {
                   step="1"
                   min="0"
                   max="100"
-                  className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                    errors.royaltyPercentage ? 'border-red-500' : 'border-gray-600'
+                  className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                    errors.royaltyPercentage ? 'border-blue-500' : 'border-gray-600'
                   }`}
                 />
                 <p className="text-gray-400 text-xs mt-1">Your share of revenue</p>
-                {errors.royaltyPercentage && <p className="text-red-400 text-xs mt-1">{errors.royaltyPercentage}</p>}
+                {errors.royaltyPercentage && <p className="text-blue-400 text-xs mt-1">{errors.royaltyPercentage}</p>}
               </div>
             </div>
 
@@ -506,7 +506,7 @@ function UploadMovie() {
                   name="videoQuality"
                   value={formData.videoQuality}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-yellow-400"
+                  className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-blue-400"
                 >
                   <option value="240p">240p</option>
                   <option value="360p">360p</option>
@@ -524,7 +524,7 @@ function UploadMovie() {
                     name="allowDownload"
                     checked={formData.allowDownload}
                     onChange={handleChange}
-                    className="w-4 h-4 accent-yellow-400"
+                    className="w-4 h-4 accent-blue-400"
                   />
                   <span className="text-sm">Enable Downloads</span>
                 </label>
@@ -540,7 +540,7 @@ function UploadMovie() {
                   onChange={handleChange}
                   placeholder="30"
                   min="1"
-                  className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-yellow-400"
+                  className="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg outline-none focus:border-blue-400"
                 />
                 <p className="text-gray-400 text-xs mt-1">How long download links remain valid after purchase</p>
               </div>
@@ -549,9 +549,9 @@ function UploadMovie() {
 
           {/* Video File Upload */}
           <div className="border-t border-gray-700 pt-6">
-            <label className="block text-sm font-medium mb-2">Movie Video File <span className="text-red-400">*</span></label>
+            <label className="block text-sm font-medium mb-2">Movie Video File <span className="text-blue-400">*</span></label>
             <div className={`border-2 border-dashed rounded-lg p-8 text-center transition-all cursor-pointer ${
-              errors.videoFile ? 'border-red-500 bg-red-500/5' : 'border-gray-600 hover:border-yellow-400'
+              errors.videoFile ? 'border-blue-500 bg-blue-500/5' : 'border-gray-600 hover:border-blue-400'
             }`}>
               <input
                 type="file"
@@ -581,15 +581,15 @@ function UploadMovie() {
                 <p className="text-gray-400 text-sm mt-2">MP4, WebM, or OGG (max 5GB)</p>
               </label>
             </div>
-            {errors.videoFile && <p className="text-red-400 text-xs mt-1">{errors.videoFile}</p>}
+            {errors.videoFile && <p className="text-blue-400 text-xs mt-1">{errors.videoFile}</p>}
           </div>
 
           {/* Warning */}
-          <div className="flex items-start gap-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-            <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+            <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-yellow-300 font-semibold">Important</p>
-              <p className="text-sm text-yellow-300 mt-1">
+              <p className="text-sm text-blue-300 font-semibold">Important</p>
+              <p className="text-sm text-blue-300 mt-1">
                 Make sure you have the rights to distribute this content. Your film will be reviewed by our team before publishing. Processing may take 24-48 hours.
               </p>
             </div>
@@ -599,7 +599,7 @@ function UploadMovie() {
           <button
             type="submit"
             disabled={uploading}
-            className="w-full bg-gradient-to-r from-yellow-400 to-red-500 hover:from-yellow-500 hover:to-red-600 disabled:from-gray-600 disabled:to-gray-600 text-black font-semibold py-2.5 rounded-lg transition-all flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-600 text-black font-semibold py-2.5 rounded-lg transition-all flex items-center justify-center gap-2"
           >
             {uploading ? (
               <>

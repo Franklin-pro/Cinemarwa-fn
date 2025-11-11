@@ -60,7 +60,7 @@ function MovieWatch() {
           <div className="w-full h-full flex items-center justify-center">
             <button
               onClick={() => setIsPlaying(true)}
-              className="flex items-center gap-3 bg-yellow-500 hover:bg-yellow-600 text-black px-8 py-4 rounded-full text-lg font-semibold transition-all"
+              className="flex items-center gap-3 bg-blue-500 hover:bg-blue-600 text-black px-8 py-4 rounded-full text-lg font-semibold transition-all"
             >
               <Play className="w-6 h-6" />
               Play Movie
@@ -107,7 +107,7 @@ function MovieWatch() {
                           size={18}
                           className={`${
                             i < Math.floor(movie?.rating || 0)
-                              ? 'fill-yellow-400 text-yellow-400'
+                              ? 'fill-blue-400 text-blue-400'
                               : 'text-gray-500'
                           }`}
                         />
@@ -149,7 +149,7 @@ function MovieWatch() {
                 </div>
                 <div>
                   <p className="text-gray-400">Rating</p>
-                  <p className="text-xl font-semibold text-yellow-400">
+                  <p className="text-xl font-semibold text-blue-400">
                     {movie?.rating || 'N/A'}/5
                   </p>
                 </div>
@@ -158,7 +158,7 @@ function MovieWatch() {
                   <p className="text-white font-semibold">{movie?.year || 'N/A'}</p>
                 </div>
               </div>
-              <button className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition-colors">
+              <button className="w-full mt-6 bg-blue-500 hover:bg-blue-600 text-black font-semibold py-3 rounded-lg transition-colors">
                 Watch Now
               </button>
             </div>

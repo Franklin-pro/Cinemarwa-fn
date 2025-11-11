@@ -50,7 +50,7 @@ function ViewDashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-400">Loading your dashboard...</p>
         </div>
       </div>
@@ -61,10 +61,10 @@ function ViewDashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-400 mb-4">{error}</p>
+          <p className="text-blue-400 mb-4">{error}</p>
           <button
             onClick={fetchViewerData}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-lg font-semibold"
+            className="bg-blue-500 hover:bg-blue-600 text-black px-6 py-2 rounded-lg font-semibold"
           >
             Retry
           </button>
@@ -84,8 +84,8 @@ function ViewDashboard() {
 
         {/* Stats Grid */}
         <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-6 hover:border-yellow-500/50 transition-colors">
-            <Film className="w-8 h-8 text-yellow-400 mb-3" />
+          <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-6 hover:border-blue-500/50 transition-colors">
+            <Film className="w-8 h-8 text-blue-400 mb-3" />
             <p className="text-gray-400 text-sm mb-1">Movies Purchased</p>
             <p className="text-3xl font-bold">{stats.totalPurchased}</p>
           </div>
@@ -109,7 +109,7 @@ function ViewDashboard() {
             onClick={() => setActiveTab('movies')}
             className={`pb-3 px-2 font-semibold transition-colors ${
               activeTab === 'movies'
-                ? 'text-yellow-400 border-b-2 border-yellow-400'
+                ? 'text-blue-400 border-b-2 border-blue-400'
                 : 'text-gray-400 hover:text-gray-300'
             }`}
           >
@@ -119,7 +119,7 @@ function ViewDashboard() {
             onClick={() => setActiveTab('history')}
             className={`pb-3 px-2 font-semibold transition-colors ${
               activeTab === 'history'
-                ? 'text-yellow-400 border-b-2 border-yellow-400'
+                ? 'text-blue-400 border-b-2 border-blue-400'
                 : 'text-gray-400 hover:text-gray-300'
             }`}
           >
@@ -137,7 +137,7 @@ function ViewDashboard() {
                 <p className="text-gray-400 mb-4">You haven't purchased any movies yet</p>
                 <button
                   onClick={() => navigate('/')}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-lg font-semibold"
+                  className="bg-blue-500 hover:bg-blue-600 text-black px-6 py-2 rounded-lg font-semibold"
                 >
                   Browse Movies
                 </button>
@@ -147,7 +147,7 @@ function ViewDashboard() {
                 {purchasedMovies.map((movie) => (
                   <div
                     key={movie._id}
-                    className="bg-gray-800 rounded-lg overflow-hidden hover:border-yellow-500 border border-gray-700 transition-all group cursor-pointer"
+                    className="bg-gray-800 rounded-lg overflow-hidden hover:border-blue-500 border border-gray-700 transition-all group cursor-pointer"
                     onClick={() => handleWatchMovie(movie._id)}
                   >
                     <div className="aspect-video bg-gray-700 flex items-center justify-center overflow-hidden relative">
@@ -167,7 +167,7 @@ function ViewDashboard() {
 
                       {/* Watch button overlay */}
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-lg font-semibold transition-all">
+                        <button className="bg-blue-500 hover:bg-blue-600 text-black px-6 py-2 rounded-lg font-semibold transition-all">
                           Watch Now
                         </button>
                       </div>

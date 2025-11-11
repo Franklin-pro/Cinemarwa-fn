@@ -25,7 +25,7 @@ function MovieAnalytics() {
           <p className="text-gray-400 mb-4">Movie not found</p>
           <button
             onClick={() => navigate('/admin/movies')}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-lg font-semibold"
+            className="bg-blue-500 hover:bg-blue-600 text-black px-6 py-2 rounded-lg font-semibold"
           >
             Go Back
           </button>
@@ -62,13 +62,13 @@ function MovieAnalytics() {
       icon: DollarSign,
       label: 'Total Revenue',
       value: `$${analytics.totalRevenue.toFixed(2)}`,
-      color: 'yellow',
+      color: 'blue',
     },
     {
       icon: Users,
       label: 'Unique Viewers',
       value: analytics.viewers.toLocaleString(),
-      color: 'red',
+      color: 'blue',
     },
   ];
 
@@ -96,7 +96,7 @@ function MovieAnalytics() {
         {/* Header */}
         <button
           onClick={() => navigate('/admin/movies')}
-          className="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 mb-8"
+          className="flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Movies
@@ -139,7 +139,7 @@ function MovieAnalytics() {
                   className="flex-1 flex flex-col items-center"
                 >
                   <div
-                    className="w-full bg-gradient-to-t from-yellow-400 to-red-500 rounded-t-lg transition-all hover:opacity-80"
+                    className="w-full bg-gradient-to-t from-blue-400 to-blue-500 rounded-t-lg transition-all hover:opacity-80"
                     style={{
                       height: `${(data.views / maxViews) * 100}%`,
                     }}
@@ -162,7 +162,7 @@ function MovieAnalytics() {
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
                   <div
-                    className="bg-yellow-400 h-2 rounded-full"
+                    className="bg-blue-400 h-2 rounded-full"
                     style={{ width: '65%' }}
                   />
                 </div>
@@ -174,7 +174,7 @@ function MovieAnalytics() {
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
                   <div
-                    className="bg-red-500 h-2 rounded-full"
+                    className="bg-blue-500 h-2 rounded-full"
                     style={{ width: '35%' }}
                   />
                 </div>
@@ -197,9 +197,9 @@ function MovieAnalytics() {
                   <div
                     className={`h-3 rounded-full transition-all ${
                       idx === 0
-                        ? 'bg-yellow-400'
+                        ? 'bg-blue-400'
                         : idx === 1
-                        ? 'bg-red-500'
+                        ? 'bg-blue-500'
                         : 'bg-blue-500'
                     }`}
                     style={{ width: `${item.percentage}%` }}
@@ -222,7 +222,7 @@ function MovieAnalytics() {
                   key={i}
                   className={`w-4 h-4 rounded-full ${
                     i < Math.floor(analytics.avgRating)
-                      ? 'bg-yellow-400'
+                      ? 'bg-blue-400'
                       : 'bg-gray-600'
                   }`}
                 />

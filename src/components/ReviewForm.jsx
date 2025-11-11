@@ -99,7 +99,7 @@ function ReviewForm({ movieId, onReviewAdded }) {
       <h3 className="text-xl font-semibold mb-4 text-white">Add a Review</h3>
 
       {error && (
-        <div className="bg-red-900/20 border border-red-700 text-red-300 px-4 py-3 rounded-lg mb-4">
+        <div className="bg-blue-900/20 border border-blue-700 text-blue-300 px-4 py-3 rounded-lg mb-4">
           {error}
         </div>
       )}
@@ -130,7 +130,7 @@ function ReviewForm({ movieId, onReviewAdded }) {
                   size={24}
                   className={`${
                     value <= (hoveredRating || formData.rating)
-                      ? 'fill-yellow-400 text-yellow-400'
+                      ? 'fill-blue-400 text-blue-400'
                       : 'text-gray-500'
                   } transition-colors`}
                 />
@@ -153,7 +153,7 @@ function ReviewForm({ movieId, onReviewAdded }) {
             value={formData.title}
             onChange={handleInputChange}
             placeholder="What's the main point?"
-            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
             maxLength={100}
           />
           <p className="text-xs text-gray-400 mt-1">
@@ -172,7 +172,7 @@ function ReviewForm({ movieId, onReviewAdded }) {
             onChange={handleInputChange}
             placeholder="Share your thoughts about this movie..."
             rows={5}
-            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500 resize-none"
+            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
             maxLength={1000}
           />
           <p className="text-xs text-gray-400 mt-1">
@@ -187,7 +187,7 @@ function ReviewForm({ movieId, onReviewAdded }) {
           className={`w-full py-2 px-4 rounded-lg font-semibold transition-all ${
             loading
               ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              : 'bg-yellow-500 hover:bg-yellow-600 text-black cursor-pointer'
+              : 'bg-blue-500 hover:bg-blue-600 text-black cursor-pointer'
           }`}
         >
           {loading ? 'Submitting...' : 'Submit Review'}

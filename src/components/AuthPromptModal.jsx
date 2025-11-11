@@ -34,7 +34,7 @@ function AuthPromptModal({ isOpen, onClose, movieTitle }) {
             Watch Limit Reached
           </h2>
           <p className="text-neutral-400 mb-4">
-            You've watched 10 seconds of <span className="text-yellow-400 font-semibold">{movieTitle}</span>
+            You've watched 10 seconds of <span className="text-blue-400 font-semibold">{movieTitle}</span>
           </p>
           <p className="text-neutral-300 text-sm">
             Sign in or create an account to watch the full movie and enjoy unlimited streaming.
@@ -63,7 +63,7 @@ function AuthPromptModal({ isOpen, onClose, movieTitle }) {
 
           <button
             onClick={handleSignup}
-            className="w-full bg-gradient-to-r from-yellow-400 to-red-500 hover:from-yellow-500 hover:to-red-600 text-black px-6 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors font-semibold"
+            className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-black px-6 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors font-semibold"
           >
             <UserPlus className="w-5 h-5" />
             Create New Account
