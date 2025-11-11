@@ -285,8 +285,8 @@ function MovieDetails({ movieId, onclose }) {
 
                         <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 justify-center md:justify-start">
                           <div className="flex items-center">
-                            <Star className="w-4 h-4 text-yellow-500" />
-                            <span className="text-yellow-500 text-sm font-medium ml-1">
+                            <Star className="w-4 h-4 text-blue-500" />
+                            <span className="text-blue-500 text-sm font-medium ml-1">
                               {formatRating(movie.avgRating)} (
                               {movie.vote_count.toLocaleString()} votes)
                             </span>

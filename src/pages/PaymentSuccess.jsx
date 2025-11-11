@@ -65,7 +65,7 @@ function PaymentSuccess() {
             {/* Watch/Download Button */}
             <button
               onClick={() => navigate(`/movie/${transaction?.movieId}`)}
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-black font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               {transaction?.type === 'watch' ? (
                 <>
@@ -101,15 +101,15 @@ function PaymentSuccess() {
           <h3 className="text-lg font-semibold text-white mb-4">What's Next?</h3>
           <ul className="space-y-3 text-sm text-gray-300">
             <li className="flex items-start gap-3">
-              <span className="text-yellow-500 font-bold">1.</span>
+              <span className="text-blue-500 font-bold">1.</span>
               <span>Access your purchase in the "My Downloads" or "Continue Watching" section</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-yellow-500 font-bold">2.</span>
+              <span className="text-blue-500 font-bold">2.</span>
               <span>You have the right to watch/download as per your purchase option</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-yellow-500 font-bold">3.</span>
+              <span className="text-blue-500 font-bold">3.</span>
               <span>Need help? Contact our support team at support@filmnyarwanda.com</span>
             </li>
           </ul>

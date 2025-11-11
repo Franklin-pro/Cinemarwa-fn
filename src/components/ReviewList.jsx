@@ -74,7 +74,7 @@ function ReviewList({ movieId }) {
                       size={16}
                       className={`${
                         i < review.avgRating
-                          ? 'fill-yellow-400 text-yellow-400'
+                          ? 'fill-blue-400 text-blue-400'
                           : 'text-gray-500'
                       }`}
                     />
@@ -97,11 +97,11 @@ function ReviewList({ movieId }) {
 
           {/* Review Footer */}
           <div className="flex items-center gap-4 pt-4 border-t border-gray-700">
-            <button className="flex items-center gap-2 text-gray-400 hover:text-yellow-400 transition-colors">
+            <button className="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors">
               <ThumbsUp size={16} />
               <span className="text-sm">Helpful</span>
             </button>
-            <button className="flex items-center gap-2 text-gray-400 hover:text-yellow-400 transition-colors">
+            <button className="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors">
               <MessageSquare size={16} />
               <span className="text-sm">Reply</span>
             </button>

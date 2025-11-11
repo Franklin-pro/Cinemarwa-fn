@@ -138,7 +138,7 @@ function WithdrawalRequest() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-12 h-12 animate-spin mx-auto mb-4 text-yellow-500" />
+          <Loader className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500" />
           <p className="text-gray-400">Loading withdrawal information...</p>
         </div>
       </div>
@@ -157,7 +157,7 @@ function WithdrawalRequest() {
             ← Back to Dashboard
           </button>
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-            <DollarSign className="w-8 h-8 text-yellow-400" />
+            <DollarSign className="w-8 h-8 text-blue-400" />
             Request Withdrawal
           </h1>
           <p className="text-gray-400">Withdraw your earnings to your bank account or payment method</p>
@@ -165,9 +165,9 @@ function WithdrawalRequest() {
 
         {/* Alerts */}
         {error && (
-          <div className="mb-6 bg-red-500/10 border border-red-500/50 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-            <p className="text-red-200">{error}</p>
+          <div className="mb-6 bg-blue-500/10 border border-blue-500/50 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+            <p className="text-blue-200">{error}</p>
           </div>
         )}
 
@@ -206,15 +206,15 @@ function WithdrawalRequest() {
 
                 {/* Payment Method Status */}
                 {!paymentMethod?.currentMethod ? (
-                  <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-red-200 font-semibold">No Payment Method Configured</p>
-                      <p className="text-red-100/70 text-sm mt-1">You must add a payment method before requesting a withdrawal</p>
+                      <p className="text-blue-200 font-semibold">No Payment Method Configured</p>
+                      <p className="text-blue-100/70 text-sm mt-1">You must add a payment method before requesting a withdrawal</p>
                       <button
                         type="button"
                         onClick={() => navigate('/filmmaker/payment-method')}
-                        className="mt-2 text-sm underline text-red-300 hover:text-red-200"
+                        className="mt-2 text-sm underline text-blue-300 hover:text-blue-200"
                       >
                         Go to Payment Methods →
                       </button>
@@ -248,7 +248,7 @@ function WithdrawalRequest() {
                       step="0.01"
                       min={MINIMUM_WITHDRAWAL}
                       max={stats?.availableBalance || 0}
-                      className="w-full pl-8 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                      className="w-full pl-8 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   {formData.amount && (
@@ -267,7 +267,7 @@ function WithdrawalRequest() {
                     name="withdrawalMethod"
                     value={formData.withdrawalMethod}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="momo">MoMo - Mobile Money (1-2 business days)</option>
                     <option value="bank">Bank Transfer (5-7 business days)</option>
@@ -286,7 +286,7 @@ function WithdrawalRequest() {
                     onChange={handleChange}
                     placeholder="Add any notes about this withdrawal request..."
                     rows="3"
-                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -305,7 +305,7 @@ function WithdrawalRequest() {
                 <button
                   type="submit"
                   disabled={submitting || !paymentMethod?.currentMethod || !(finance?.balance?.pendingBalance || stats?.availableBalance)}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-600 disabled:opacity-50 text-black px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+                  className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-600 disabled:opacity-50 text-black px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <>
@@ -344,8 +344,8 @@ function WithdrawalRequest() {
                           withdrawal.status === 'completed'
                             ? 'bg-green-500/20 text-green-400'
                             : withdrawal.status === 'pending'
-                            ? 'bg-yellow-500/20 text-yellow-400'
-                            : 'bg-red-500/20 text-red-400'
+                            ? 'bg-blue-500/20 text-blue-400'
+                            : 'bg-blue-500/20 text-blue-400'
                         }`}>
                           {withdrawal.status}
                         </span>

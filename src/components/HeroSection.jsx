@@ -77,7 +77,7 @@ function HeroSection() {
                 NOW PLAYING MOVIE
               </span>
               <div className="flex items-center text-neutral-300">
-                <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                <Star className="w-4 h-4 text-blue-500 mr-1" />
                 <span>{activeMovie.vote_average?.toFixed(1) ?? "N/A"}</span>
               </div>
               <span className="text-neutral-400">•</span>

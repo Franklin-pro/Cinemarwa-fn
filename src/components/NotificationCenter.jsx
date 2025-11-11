@@ -7,7 +7,7 @@ const notifications = [
     type: "new_release",
     title: "New Movie Release!",
     message: "‘The Lost Kingdom’ is now available to stream.",
-    icon: <Film className="text-red-500 w-6 h-6" />,
+    icon: <Film className="text-blue-500 w-6 h-6" />,
     time: "2 hours ago",
   },
   {
@@ -31,7 +31,7 @@ const notifications = [
     type: "reminder",
     title: "Reminder",
     message: "‘Starlight’ premieres this Friday. Add it to your watchlist!",
-    icon: <Calendar className="text-yellow-500 w-6 h-6" />,
+    icon: <Calendar className="text-blue-500 w-6 h-6" />,
     time: "3 days ago",
   },
 ];
@@ -42,7 +42,7 @@ export default function NotificationCenter() {
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <Bell className="w-8 h-8 text-yellow-400" />
+          <Bell className="w-8 h-8 text-blue-400" />
           <h1 className="text-3xl font-bold">Notification Center</h1>
         </div>
 

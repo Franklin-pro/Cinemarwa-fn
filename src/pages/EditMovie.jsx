@@ -102,7 +102,7 @@ function EditMovie() {
           <p className="text-gray-400 mb-4">Movie not found</p>
           <button
             onClick={() => navigate('/admin/movies')}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-lg font-semibold"
+            className="bg-blue-500 hover:bg-blue-600 text-black px-6 py-2 rounded-lg font-semibold"
           >
             Go Back
           </button>
@@ -117,7 +117,7 @@ function EditMovie() {
         {/* Header */}
         <button
           onClick={() => navigate('/admin/movies')}
-          className="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 mb-8"
+          className="flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Movies
@@ -147,12 +147,12 @@ function EditMovie() {
               value={formData.title}
               onChange={handleChange}
               placeholder="Enter movie title"
-              className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                validationErrors.title ? 'border-red-500' : 'border-gray-600'
+              className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                validationErrors.title ? 'border-blue-500' : 'border-gray-600'
               }`}
             />
             {validationErrors.title && (
-              <p className="text-red-400 text-sm mt-1">{validationErrors.title}</p>
+              <p className="text-blue-400 text-sm mt-1">{validationErrors.title}</p>
             )}
           </div>
 
@@ -165,12 +165,12 @@ function EditMovie() {
               onChange={handleChange}
               placeholder="Movie synopsis..."
               rows="4"
-              className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                validationErrors.description ? 'border-red-500' : 'border-gray-600'
+              className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                validationErrors.description ? 'border-blue-500' : 'border-gray-600'
               }`}
             />
             {validationErrors.description && (
-              <p className="text-red-400 text-sm mt-1">{validationErrors.description}</p>
+              <p className="text-blue-400 text-sm mt-1">{validationErrors.description}</p>
             )}
           </div>
 
@@ -181,8 +181,8 @@ function EditMovie() {
               name="genre"
               value={formData.genre}
               onChange={handleChange}
-              className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                validationErrors.genre ? 'border-red-500' : 'border-gray-600'
+              className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                validationErrors.genre ? 'border-blue-500' : 'border-gray-600'
               }`}
             >
               <option value="">Select genre</option>
@@ -195,7 +195,7 @@ function EditMovie() {
               <option value="documentary">Documentary</option>
             </select>
             {validationErrors.genre && (
-              <p className="text-red-400 text-sm mt-1">{validationErrors.genre}</p>
+              <p className="text-blue-400 text-sm mt-1">{validationErrors.genre}</p>
             )}
           </div>
 
@@ -210,12 +210,12 @@ function EditMovie() {
                 onChange={handleChange}
                 placeholder="2.99"
                 step="0.01"
-                className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                  validationErrors.watchPrice ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                  validationErrors.watchPrice ? 'border-blue-500' : 'border-gray-600'
                 }`}
               />
               {validationErrors.watchPrice && (
-                <p className="text-red-400 text-sm mt-1">{validationErrors.watchPrice}</p>
+                <p className="text-blue-400 text-sm mt-1">{validationErrors.watchPrice}</p>
               )}
             </div>
             <div>
@@ -227,12 +227,12 @@ function EditMovie() {
                 onChange={handleChange}
                 placeholder="4.99"
                 step="0.01"
-                className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-yellow-400 ${
-                  validationErrors.downloadPrice ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-4 py-2.5 bg-gray-700/50 border rounded-lg outline-none focus:border-blue-400 ${
+                  validationErrors.downloadPrice ? 'border-blue-500' : 'border-gray-600'
                 }`}
               />
               {validationErrors.downloadPrice && (
-                <p className="text-red-400 text-sm mt-1">{validationErrors.downloadPrice}</p>
+                <p className="text-blue-400 text-sm mt-1">{validationErrors.downloadPrice}</p>
               )}
             </div>
           </div>
@@ -245,7 +245,7 @@ function EditMovie() {
               name="isVisible"
               checked={formData.isVisible}
               onChange={handleChange}
-              className="w-5 h-5 rounded accent-yellow-400"
+              className="w-5 h-5 rounded accent-blue-400"
             />
             <label htmlFor="isVisible" className="flex-1 cursor-pointer">
               <p className="font-medium">Make Movie Visible</p>
@@ -259,7 +259,7 @@ function EditMovie() {
           <button
             type="submit"
             disabled={isSaving}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-400 to-red-500 hover:from-yellow-500 hover:to-red-600 disabled:from-gray-600 disabled:to-gray-600 text-black font-semibold py-2.5 rounded-lg transition-all"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-600 text-black font-semibold py-2.5 rounded-lg transition-all"
           >
             <Save className="w-5 h-5" />
             {isSaving ? 'Saving...' : 'Save Changes'}

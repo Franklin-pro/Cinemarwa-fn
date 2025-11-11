@@ -75,7 +75,7 @@ function MovieDetailsPages() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-12 h-12 animate-spin mx-auto mb-4 text-yellow-500" />
+          <Loader className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500" />
           <p className="text-gray-400">Loading movie details...</p>
         </div>
       </div>
@@ -87,12 +87,12 @@ function MovieDetailsPages() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-gray-800/60 border border-gray-700 rounded-lg p-8 text-center">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          <AlertCircle className="w-12 h-12 text-blue-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-4">Error</h2>
           <p className="text-gray-300 mb-6">{error || 'Movie not found'}</p>
           <button
             onClick={() => navigate('/')}
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition-colors"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-black font-semibold py-3 rounded-lg transition-colors"
           >
             Back to Home
           </button>
@@ -111,7 +111,7 @@ function MovieDetailsPages() {
         {/* Back Button */}
         <button
           onClick={() => navigate(`/movie/${id}`)}
-          className="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 mb-6 transition-colors"
+          className="flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
@@ -151,7 +151,7 @@ function MovieDetailsPages() {
                       key={i}
                       className={`w-4 h-4 ${
                         i < rating
-                          ? 'text-yellow-400 fill-yellow-400'
+                          ? 'text-blue-400 fill-blue-400'
                           : 'text-gray-600'
                       }`}
                     />
@@ -227,7 +227,7 @@ function MovieDetailsPages() {
                 {/* Watch Button */}
                 <button
                   onClick={handleWatchClick()}
-                  className="w-full flex items-center justify-between bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-4 rounded-lg font-semibold transition-all group"
+                  className="w-full flex items-center justify-between bg-blue-500 hover:bg-blue-600 text-black px-6 py-4 rounded-lg font-semibold transition-all group"
                 >
                   <span>Watch Online (48 hours) - ${pricing.watch}</span>
                   <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />

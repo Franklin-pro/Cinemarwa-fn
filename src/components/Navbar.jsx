@@ -333,7 +333,7 @@ const Navbar = () => {
                   )}
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-neutral-700 transition flex items-center space-x-2 focus:outline-none"
+                    className="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-neutral-700 transition flex items-center space-x-2 focus:outline-none"
                   >
                     <LogOut size={16} />
                     <span>Logout</span>
@@ -495,7 +495,7 @@ const Navbar = () => {
                   )}
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-neutral-700 transition flex items-center space-x-2 focus:outline-none"
+                    className="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-neutral-700 transition flex items-center space-x-2 focus:outline-none"
                   >
                     <LogOut size={16} />
                     <span>Logout</span>
