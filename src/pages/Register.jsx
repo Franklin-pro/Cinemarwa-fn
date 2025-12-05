@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { register, googleAuth } from '../store/slices/authSlice';
-import { Mail, Lock, User, Film, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { getOrCreateDeviceFingerprint, getDeviceInfo } from '../utils/fingerprint';
+import { Mail, Lock, User, Film, Eye, EyeOff, AlertCircle, CheckCircle, Smartphone, Monitor, Tablet, Shield } from 'lucide-react';
 
 function Register() {
   const dispatch = useDispatch();
@@ -19,6 +20,29 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [deviceFingerprint, setDeviceFingerprint] = useState('');
+  const [deviceInfo, setDeviceInfo] = useState(null);
+  const [showDeviceInfo, setShowDeviceInfo] = useState(false);
+
+  // Initialize fingerprint on component mount
+  useEffect(() => {
+    const initFingerprint = () => {
+      try {
+        const fingerprint = getOrCreateDeviceFingerprint();
+        const deviceData = getDeviceInfo();
+        
+        setDeviceFingerprint(fingerprint);
+        setDeviceInfo(deviceData);
+        
+        console.log('Device Fingerprint:', fingerprint.substring(0, 20) + '...');
+        console.log('Device Info:', deviceData);
+      } catch (error) {
+        console.error('Failed to generate fingerprint:', error);
+      }
+    };
+
+    initFingerprint();
+  }, []);
 
   const validateForm = () => {
     const errors = {};
@@ -58,17 +82,15 @@ function Register() {
 
   const handleGoogleSignupSuccess = async () => {
     try {
+      // Store fingerprint in session storage for Google OAuth redirect
+      sessionStorage.setItem('pendingDeviceFingerprint', deviceFingerprint);
+      sessionStorage.setItem('pendingRegistrationRole', formData.role);
+      
       // Initiate Google OAuth flow
-      // This redirects to backend GET /api/auth/google
-      window.location.href = 'http://localhost:5000/api/auth/google';
-      // Backend will handle OAuth flow and redirect after successful auth
+      window.location.href = `http://localhost:5000/api/auth/google?role=${formData.role}`;
     } catch (error) {
       console.error('Google signup error:', error);
     }
-  };
-
-  const handleGoogleSignupError = (error) => {
-    console.error('Google signup failed:', error);
   };
 
   const handleSubmit = async (e) => {
@@ -80,19 +102,68 @@ function Register() {
       return;
     }
 
-    const result = await dispatch(
-      register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        role: formData.role,
-      })
-    );
+    // Check if we have device fingerprint
+    if (!deviceFingerprint) {
+      alert('Device recognition is initializing. Please wait a moment and try again.');
+      return;
+    }
+
+    // Include device fingerprint in registration
+    const registrationData = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      role: formData.role,
+      deviceFingerprint: deviceFingerprint
+    };
+
+    const result = await dispatch(register(registrationData));
 
     if (result.payload) {
+      // Store fingerprint in localStorage for future requests
+      localStorage.setItem('deviceFingerprint', deviceFingerprint);
       navigate('/');
     }
   };
+
+  // Get device icon based on user agent
+  const getDeviceIcon = () => {
+    if (!deviceInfo) return <Smartphone className="w-4 h-4" />;
+    
+    const ua = deviceInfo.userAgent.toLowerCase();
+    if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) {
+      return <Smartphone className="w-4 h-4" />;
+    } else if (ua.includes('tablet') || ua.includes('ipad')) {
+      return <Tablet className="w-4 h-4" />;
+    } else {
+      return <Monitor className="w-4 h-4" />;
+    }
+  };
+
+  // Password strength indicator
+  const getPasswordStrength = (password) => {
+    if (!password) return { score: 0, text: '', color: 'gray' };
+    
+    let score = 0;
+    if (password.length >= 6) score++;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+    
+    const strengthMap = {
+      0: { text: 'Very weak', color: 'text-red-400' },
+      1: { text: 'Weak', color: 'text-red-400' },
+      2: { text: 'Fair', color: 'text-yellow-400' },
+      3: { text: 'Good', color: 'text-green-400' },
+      4: { text: 'Strong', color: 'text-green-400' },
+      5: { text: 'Very strong', color: 'text-green-400' }
+    };
+    
+    return strengthMap[score] || strengthMap[0];
+  };
+
+  const passwordStrength = getPasswordStrength(formData.password);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white px-4 pt-24 pb-12 flex items-center justify-center">
@@ -103,6 +174,50 @@ function Register() {
             Film Nyarwanda
           </h1>
           <p className="text-gray-400">Join us and discover amazing movies</p>
+          
+          {/* Device Info Badge */}
+          {deviceInfo && (
+            <div className="mt-4">
+              <button
+                onClick={() => setShowDeviceInfo(!showDeviceInfo)}
+                className="inline-flex items-center gap-2 px-3 py-1 bg-gray-800/50 border border-gray-700 rounded-full text-xs hover:bg-gray-800 transition-colors"
+              >
+                {getDeviceIcon()}
+                <span>Device: {deviceInfo.platform}</span>
+              </button>
+              
+              {showDeviceInfo && (
+                <div className="mt-2 p-3 bg-gray-900/80 border border-gray-700 rounded-lg text-xs text-left">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <span className="text-gray-400">Screen:</span>
+                      <div className="font-medium">{deviceInfo.screenResolution}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Language:</span>
+                      <div className="font-medium">{deviceInfo.language}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Timezone:</span>
+                      <div className="font-medium">{deviceInfo.timezone}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Browser:</span>
+                      <div className="font-medium truncate">
+                        {deviceInfo.userAgent.split(' ').slice(-2).join(' ')}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-700">
+                    <span className="text-gray-400">Fingerprint:</span>
+                    <div className="font-mono text-xs truncate">
+                      {deviceFingerprint.substring(0, 30)}...
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Registration Form */}
@@ -115,6 +230,20 @@ function Register() {
             <div className="flex items-center gap-3 bg-blue-500/10 border border-blue-500/50 rounded-lg p-4">
               <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
               <p className="text-sm text-blue-400">{error}</p>
+            </div>
+          )}
+
+          {/* Device Security Note */}
+          {deviceFingerprint && (
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <Shield className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-blue-300">
+                  <strong>Device Recognition Active:</strong> This device will be registered for secure login.
+                  {formData.role === 'viewer' && ' Free accounts allow 1 device.'}
+                  {formData.role === 'filmmaker' && ' Filmmaker accounts allow 2 devices.'}
+                </p>
+              </div>
             </div>
           )}
 
@@ -166,7 +295,14 @@ function Register() {
 
           {/* Password Field */}
           <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
+            <label className="block text-sm font-medium mb-2">
+              Password
+              {formData.password && (
+                <span className={`ml-2 text-xs font-normal ${passwordStrength.color}`}>
+                  {passwordStrength.text}
+                </span>
+              )}
+            </label>
             <div className="relative">
               <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
               <input
@@ -191,6 +327,35 @@ function Register() {
             </div>
             {validationErrors.password && (
               <p className="text-blue-400 text-sm mt-1">{validationErrors.password}</p>
+            )}
+            
+            {/* Password strength bar */}
+            {formData.password && (
+              <div className="mt-2">
+                <div className="flex gap-1 mb-1">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className={`h-1 flex-1 rounded-full ${
+                        i <= (passwordStrength.score)
+                          ? passwordStrength.score <= 2 
+                            ? 'bg-red-400' 
+                            : passwordStrength.score <= 3 
+                            ? 'bg-yellow-400' 
+                            : 'bg-green-400'
+                          : 'bg-gray-700'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className="text-xs text-gray-400">
+                  {formData.password.length < 6 && 'At least 6 characters'}
+                  {formData.password.length >= 6 && !/[A-Z]/.test(formData.password) && 'Add uppercase letter'}
+                  {formData.password.length >= 6 && /[A-Z]/.test(formData.password) && !/[0-9]/.test(formData.password) && 'Add number'}
+                  {formData.password.length >= 6 && /[A-Z]/.test(formData.password) && /[0-9]/.test(formData.password) && !/[^A-Za-z0-9]/.test(formData.password) && 'Add special character'}
+                  {formData.password.length >= 6 && /[A-Z]/.test(formData.password) && /[0-9]/.test(formData.password) && /[^A-Za-z0-9]/.test(formData.password) && 'Strong password!'}
+                </div>
+              </div>
             )}
           </div>
 
@@ -222,6 +387,12 @@ function Register() {
             {validationErrors.confirmPassword && (
               <p className="text-blue-400 text-sm mt-1">{validationErrors.confirmPassword}</p>
             )}
+            {formData.password && formData.confirmPassword && formData.password === formData.confirmPassword && (
+              <p className="text-green-400 text-sm mt-1 flex items-center gap-1">
+                <CheckCircle className="w-4 h-4" />
+                Passwords match
+              </p>
+            )}
           </div>
 
           {/* Role Selection */}
@@ -229,7 +400,11 @@ function Register() {
             <label className="block text-sm font-medium mb-3">I am a:</label>
             <div className="space-y-3">
               {/* Viewer Option */}
-              <label className="flex items-center gap-3 p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700/50 transition-all" >
+              <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${
+                formData.role === 'viewer' 
+                  ? 'bg-blue-500/10 border-blue-500/50' 
+                  : 'border-gray-600 hover:bg-gray-700/50'
+              }`}>
                 <input
                   type="radio"
                   name="role"
@@ -240,12 +415,16 @@ function Register() {
                 />
                 <div className="flex-1">
                   <p className="font-medium text-sm">Movie Viewer</p>
-                  <p className="text-gray-400 text-xs">Watch and enjoy movies</p>
+                  <p className="text-gray-400 text-xs">Watch and enjoy movies • 1 device allowed</p>
                 </div>
               </label>
 
               {/* Filmmaker Option */}
-              <label className="flex items-center gap-3 p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700/50 transition-all">
+              <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${
+                formData.role === 'filmmaker' 
+                  ? 'bg-blue-500/10 border-blue-500/50' 
+                  : 'border-gray-600 hover:bg-gray-700/50'
+              }`}>
                 <input
                   type="radio"
                   name="role"
@@ -256,19 +435,41 @@ function Register() {
                 />
                 <div className="flex-1">
                   <p className="font-medium text-sm">Filmmaker</p>
-                  <p className="text-gray-400 text-xs">Upload and sell your films</p>
+                  <p className="text-gray-400 text-xs">Upload and sell your films • 2 devices allowed</p>
                 </div>
               </label>
             </div>
           </div>
 
+          {/* Terms and Conditions */}
+          <div className="flex items-start gap-2 p-3 bg-gray-900/30 rounded-lg">
+            <input
+              type="checkbox"
+              id="terms"
+              className="w-4 h-4 mt-1 accent-blue-400"
+              required
+            />
+            <label htmlFor="terms" className="text-xs text-gray-400">
+              I agree to the{' '}
+              <a href="/terms" className="text-blue-400 hover:text-blue-300">
+                Terms of Service
+              </a>{' '}
+              and{' '}
+              <a href="/privacy" className="text-blue-400 hover:text-blue-300">
+                Privacy Policy
+              </a>
+              . I understand that this device will be registered for authentication.
+            </label>
+          </div>
+
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !deviceFingerprint}
             className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-600 text-black font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? 'Creating Account...' : 
+             !deviceFingerprint ? 'Initializing Device...' : 'Create Account'}
           </button>
 
           {/* Divider */}
@@ -282,7 +483,7 @@ function Register() {
           <button
             type="button"
             onClick={handleGoogleSignupSuccess}
-            disabled={loading}
+            disabled={loading || !deviceFingerprint}
             className="w-full bg-white hover:bg-gray-100 disabled:bg-gray-400 text-black font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -303,7 +504,8 @@ function Register() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            {loading ? 'Signing up...' : 'Sign up with Google'}
+            {loading ? 'Signing up...' : 
+             !deviceFingerprint ? 'Loading...' : 'Sign up with Google'}
           </button>
         </form>
 

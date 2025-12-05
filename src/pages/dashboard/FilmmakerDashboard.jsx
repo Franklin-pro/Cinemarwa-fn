@@ -76,12 +76,10 @@ function FilmmakerDashboard() {
   const userId = getUsers?.id;
 
 
-useEffect(() => {
-  if (userId) {
-    dispatch(getPaymentHistory(userId));
-  }
-}, [dispatch, userId]);
-
+  useEffect(() => {
+    // Fetch payment history to get transaction details
+    dispatch(getPaymentHistory(userId, { page: 1, limit: 50 }));
+  }, [dispatch]);
 
 const paymentHistory = useSelector((state) => state.payments.paymentHistory);
 // const pagination = useSelector((state) => state.payments.pagination);

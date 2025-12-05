@@ -16,7 +16,7 @@ function PaymentSuccess() {
 
   useEffect(() => {
     // Fetch payment history to get transaction details
-    dispatch(getPaymentHistory());
+    dispatch(getPaymentHistory(userId, { page: 1, limit: 50 }));
   }, [dispatch]);
 
   // Find the transaction details

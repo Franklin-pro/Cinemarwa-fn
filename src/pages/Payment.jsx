@@ -14,19 +14,12 @@ import {
   Download,
   X,
   RefreshCw,
+  TrendingUp,
 } from "lucide-react";
 import { moviesAPI } from "../services/api/movies";
-import { paymentsService } from "../services/api/payments";
+import { processMoMoPayment, checkMoMoPaymentStatus } from "../store/slices/paymentSlice";
 
-/**
- * Redesigned Payment Page with MTN MoMo Status Verification
- * - Polls payment status after initiation
- * - Shows real-time payment confirmation
- * - Handles all MoMo states: PENDING, SUCCESSFUL, FAILED
- * - Automatically authorizes access on successful payment
- */
-
-function formatCurrency(amount, currency = "USD") {
+function formatCurrency(amount, currency = "RWF") {
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
@@ -34,16 +27,17 @@ function formatCurrency(amount, currency = "USD") {
       maximumFractionDigits: 2,
     }).format(Number(amount) || 0);
   } catch {
-    return `$${Number(amount || 0).toFixed(2)}`;
+    return `${currency} ${Number(amount || 0).toFixed(2)}`;
   }
 }
 
 export default function Payment() {
   const { movieId } = useParams();
   const [searchParams] = useSearchParams();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((s) => s.auth || {});
+  const { currentTransaction, paymentStatus, gatewayStatus, withdrawalsProcessed } = useSelector((s) => s.payments || {});
 
   // Steps: choose -> confirm -> processing -> verifying -> success/failed
   const [step, setStep] = useState(searchParams.get("type") ? "confirm" : "choose");
@@ -59,11 +53,10 @@ export default function Payment() {
   
   // Transaction tracking
   const [transactionId, setTransactionId] = useState(null);
-  const [paymentStatus, setPaymentStatus] = useState(null); // PENDING, SUCCESSFUL, FAILED
+  const [localPaymentStatus, setLocalPaymentStatus] = useState(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [pollCount, setPollCount] = useState(0);
   const maxPolls = 30; // Poll for up to 5 minutes (30 * 10 seconds)
-
 
   const formatDuration = (seconds) => {
     if (!seconds || seconds === 0) return 'N/A';
@@ -80,6 +73,7 @@ export default function Payment() {
     }
     return `${secs}s`;
   };
+
   // Fetch movie
   useEffect(() => {
     let mounted = true;
@@ -100,33 +94,47 @@ export default function Payment() {
     return () => (mounted = false);
   }, [movieId]);
 
-  // Poll payment status after initiation
+  // 🔥 Monitor Redux state for gateway success
   useEffect(() => {
-    if (!transactionId || step !== "verifying") return;
+    if (currentTransaction && gatewayStatus === 'SUCCESSFUL') {
+      console.log("✅ Gateway successful - Payment confirmed!");
+      setLocalPaymentStatus("SUCCESSFUL");
+      setStatusMessage("Payment confirmed! Access granted.");
+      setStep("success");
+      
+      // Navigate to success page
+      setTimeout(() => {
+        navigate(`/payment-success/${currentTransaction.transactionId}`);
+      }, 2000);
+    }
+  }, [currentTransaction, gatewayStatus, navigate]);
+
+  // Poll payment status after initiation (backup for non-gateway responses)
+  useEffect(() => {
+    if (!transactionId || step !== "verifying" || gatewayStatus === 'SUCCESSFUL') return;
 
     const pollInterval = setInterval(async () => {
       try {
-        const res = await paymentsService.checkMoMoPaymentStatus(transactionId);
-        const status = res.data.data.payment.paymentStatus; // PENDING, SUCCESSFUL, FAILED
+        const result = await dispatch(checkMoMoPaymentStatus(transactionId)).unwrap();
+        const status = result.data?.payment?.paymentStatus || result.status;
 
-        if (status === "SUCCESSFUL") {
+        if (status === "succeeded" || status === "SUCCESSFUL") {
           clearInterval(pollInterval);
-          setPaymentStatus("SUCCESSFUL");
+          setLocalPaymentStatus("SUCCESSFUL");
           setStatusMessage("Payment confirmed! Granting access...");
           setStep("success");
           
-          // Navigate to success page after brief delay
           setTimeout(() => {
             navigate(`/payment-success/${transactionId}`);
           }, 2000);
-        } else if (status === "FAILED") {
+        } else if (status === "failed" || status === "FAILED") {
           clearInterval(pollInterval);
-          setPaymentStatus("FAILED");
-          const reason = res.data.data.reason || "Payment was declined";
+          setLocalPaymentStatus("FAILED");
+          const reason = result.data?.reason || result.reason || "Payment was declined";
           setStatusMessage(reason);
           setFormError(reason);
           setStep("failed");
-        } else if (status === "PENDING") {
+        } else {
           setStatusMessage("Waiting for payment confirmation...");
           setPollCount((prev) => prev + 1);
         }
@@ -134,14 +142,14 @@ export default function Payment() {
         // Stop polling after max attempts
         if (pollCount >= maxPolls) {
           clearInterval(pollInterval);
-          setPaymentStatus("TIMEOUT");
+          setLocalPaymentStatus("TIMEOUT");
           setStatusMessage("Payment verification timeout. Please check your transaction history.");
           setFormError("Payment is taking longer than expected. Your transaction may still process.");
           setStep("failed");
         }
       } catch (err) {
         console.error("Status check error:", err);
-        if (pollCount >= 5) { // Give up after 5 failed checks
+        if (pollCount >= 5) {
           clearInterval(pollInterval);
           setFormError("Unable to verify payment status. Please contact support.");
           setStep("failed");
@@ -150,7 +158,7 @@ export default function Payment() {
     }, 10000); // Poll every 10 seconds
 
     return () => clearInterval(pollInterval);
-  }, [transactionId, step, pollCount, navigate]);
+  }, [transactionId, step, pollCount, gatewayStatus, dispatch, navigate]);
 
   // pricing
   const moviePrice = {
@@ -173,24 +181,23 @@ export default function Payment() {
   const validatePhone = (p) => {
     const cleaned = (p || "").replace(/\s/g, "");
     if (!cleaned) return "Phone number is required";
-    // Rwanda format: +250 followed by 9 digits OR 07XX... (10 digits)
     if (/^\+?250\d{9}$/.test(cleaned)) return null;
     if (/^07\d{8}$/.test(cleaned)) return null;
-    return "Please enter a valid phone number (e.g., +250788123456 or 0788123456)";
+    return "Please enter a valid phone number (e.g. 0788123456)";
   };
 
   const handleStartPayment = (type) => {
     setPaymentType(type);
     setStep("confirm");
     setFormError("");
-    setPaymentStatus(null);
+    setLocalPaymentStatus(null);
     setStatusMessage("");
   };
 
   const doMoMoPayment = async (e) => {
     e?.preventDefault();
     setFormError("");
-    setPaymentStatus(null);
+    setLocalPaymentStatus(null);
     setStatusMessage("");
 
     const phoneErr = validatePhone(phone);
@@ -203,10 +210,7 @@ export default function Payment() {
       setProcessing(true);
       setStep("processing");
 
-      // Calculate amounts: 95% to filmmaker, 5% to admin
       const totalAmount = moviePrice[paymentType];
-      const filmmakersAmount = (totalAmount * 70) / 100;
-      const adminAmount = (totalAmount * 30) / 100;
 
       // Format phone number for Rwanda
       let formattedPhone = phone.replace(/\s/g, "");
@@ -220,34 +224,48 @@ export default function Payment() {
       const payload = {
         movieId,
         type: paymentType,
-      amount: String(totalAmount), 
-        filmmakersAmount,
-        adminAmount,
+        amount: totalAmount,
         phoneNumber: formattedPhone,
         userId: user?.id,
         currency: currency,
       };
 
+      console.log("📤 Sending payment request:", payload);
 
-      const res = await paymentsService.processMoMoPayment(payload);
+      const result = await dispatch(processMoMoPayment(payload)).unwrap();
 
-      if (res?.data?.data?.success && res.data.data.transactionId) {
-        // Payment request accepted - now verify status
-        setTransactionId(res.data.data.transactionId);
+      console.log("📱 Payment response:", result);
+
+      if (result.success && result.transactionId) {
+        const txId = result.data.transactionId;
+        setTransactionId(txId);
         setProcessing(false);
-        setStep("verifying");
-        setStatusMessage("Payment request sent. Please approve on your phone...");
-        setPollCount(0);
+
+        // 🔥 Check if gateway already confirmed success
+        if (result.status === 'SUCCESSFUL') {
+          console.log("✅ Payment successful immediately!");
+          setStep("success");
+          setStatusMessage("Payment confirmed! Access granted.");
+          
+          setTimeout(() => {
+            navigate(`/payment-success/${txId}`);
+          }, 2000);
+        } else {
+          // Start verification polling
+          setStep("verifying");
+          setStatusMessage("Payment request sent. Please approve on your phone...");
+          setPollCount(0);
+        }
       } else {
         setProcessing(false);
         setStep("confirm");
-        setFormError(res?.data?.message || "Payment initiation failed. Please try again.");
+        setFormError(result.message || "Payment initiation failed. Please try again.");
       }
     } catch (err) {
       console.error("MoMo error:", err);
       setProcessing(false);
       setStep("confirm");
-      const errorMsg = err.response?.data?.message || err.message || "Payment processing failed. Please try again.";
+      const errorMsg = err.message || err || "Payment processing failed. Please try again.";
       setFormError(errorMsg);
     }
   };
@@ -255,13 +273,12 @@ export default function Payment() {
   const retryPayment = () => {
     setStep("confirm");
     setFormError("");
-    setPaymentStatus(null);
+    setLocalPaymentStatus(null);
     setStatusMessage("");
     setTransactionId(null);
     setPollCount(0);
   };
 
-  // UX small helpers
   const BackButton = ({ onClick }) => (
     <button
       onClick={onClick}
@@ -329,7 +346,7 @@ export default function Payment() {
     );
   }
 
-  // Main UI
+  // Main UI with Success showing withdrawals
   return (
     <div className="bg-gradient-to-b from-gray-950 via-gray-900 to-black px-4 pt-20 pb-8 md:pt-24 md:pb-16 md:min-h-screen md:flex md:items-center md:justify-center">
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
@@ -345,7 +362,6 @@ export default function Payment() {
             <div className="flex flex-col md:flex-row">
               <div className="w-full md:w-3/5 p-4 md:p-6">
                 <div className="flex items-start gap-3 md:gap-6 flex-col md:flex-row">
-                  {/* poster */}
                   <div className="w-24 h-36 md:w-32 md:h-48 flex-shrink-0 rounded-lg overflow-hidden bg-gray-800 mx-auto md:mx-0">
                     <img
                       src={
@@ -372,77 +388,40 @@ export default function Payment() {
                         {movie?.language || "en"}
                       </span>
                     </div>
-
-                    {step === "choose" && (
-                      <div className="mt-4 flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            setPaymentType((p) => (p === "watch" ? "download" : "watch"));
-                            setStep("confirm");
-                          }}
-                          className="px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm text-gray-200"
-                        >
-                          Switch to {paymentType === "watch" ? "Download" : "Watch"}
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
 
-                {/* Stepper / controls */}
+                {/* Stepper */}
                 <div className="mt-6">
                   <div className="flex flex-col md:flex-row items-center gap-4">
                     <div className="flex-1 w-full">
                       <div className="flex items-center gap-1 md:gap-2 flex-wrap justify-center md:justify-start">
-                        {/* Step pills */}
-                        <div
-                          className={`flex items-center gap-1 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs ${
-                            step === "choose" ? "bg-blue-500 text-black" : "bg-gray-800 text-gray-300"
-                          }`}
-                        >
-                          <span className="font-semibold">1</span>
-                          <span className="hidden sm:inline">Choose</span>
-                        </div>
-
-                        <div
-                          className={`flex items-center gap-1 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs ${
-                            step === "confirm" ? "bg-blue-500 text-black" : "bg-gray-800 text-gray-300"
-                          }`}
-                        >
-                          <span className="font-semibold">2</span>
-                          <span className="hidden sm:inline">Confirm</span>
-                        </div>
-
-                        <div
-                          className={`flex items-center gap-1 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs ${
-                            step === "processing" ? "bg-blue-500 text-black" : "bg-gray-800 text-gray-300"
-                          }`}
-                        >
-                          <span className="font-semibold">3</span>
-                          <span className="hidden sm:inline">Processing</span>
-                        </div>
-
-                        <div
-                          className={`flex items-center gap-1 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs ${
-                            step === "verifying" ? "bg-blue-500 text-white" : "bg-gray-800 text-gray-300"
-                          }`}
-                        >
-                          <span className="font-semibold">4</span>
-                          <span className="hidden sm:inline">Verifying</span>
-                        </div>
-
-                        <div
-                          className={`flex items-center gap-1 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs ${
-                            step === "success" ? "bg-green-500 text-black" : step === "failed" ? "bg-blue-500 text-white" : "bg-gray-800 text-gray-300"
-                          }`}
-                        >
-                          <span className="font-semibold">✓</span>
-                          <span className="hidden sm:inline">Done</span>
-                        </div>
+                        {[
+                          { key: 'choose', label: 'Choose', num: '1' },
+                          { key: 'confirm', label: 'Confirm', num: '2' },
+                          { key: 'processing', label: 'Processing', num: '3' },
+                          { key: 'verifying', label: 'Verifying', num: '4' },
+                          { key: 'success', label: 'Done', num: '✓' },
+                        ].map(({ key, label, num }) => (
+                          <div
+                            key={key}
+                            className={`flex items-center gap-1 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs ${
+                              step === key 
+                                ? key === 'success' 
+                                  ? 'bg-green-500 text-black' 
+                                  : 'bg-blue-500 text-black'
+                                : step === 'failed' && key === 'success'
+                                ? 'bg-red-500 text-white'
+                                : 'bg-gray-800 text-gray-300'
+                            }`}
+                          >
+                            <span className="font-semibold">{num}</span>
+                            <span className="hidden sm:inline">{label}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
-                    {/* Price quick */}
                     <div className="text-center md:text-right w-full md:w-auto">
                       <div className="text-xs text-gray-400">Total</div>
                       <div className="text-lg md:text-xl font-bold text-blue-400">
@@ -453,13 +432,11 @@ export default function Payment() {
                 </div>
               </div>
 
-              {/* Right column: Payment box / form */}
+              {/* Right: Payment form */}
               <div className="w-full md:w-2/5 border-t md:border-t-0 md:border-l border-gray-800 p-4 md:p-6 bg-gradient-to-b from-gray-900/90 to-gray-900/70">
-                {/* Choose mode */}
                 {step === "choose" && (
                   <div className="space-y-4">
                     <h3 className="text-lg text-white font-semibold">Choose access</h3>
-
                     <div className="grid gap-3">
                       <button
                         onClick={() => handleStartPayment("watch")}
@@ -497,41 +474,34 @@ export default function Payment() {
                         </div>
                       </button>
                     </div>
-
-                    <div className="mt-3 text-xs text-gray-400">
-                      Payments are processed via MTN Mobile Money. By proceeding you authorize the charge to your MoMo account.
-                    </div>
                   </div>
                 )}
 
-                {/* Confirm / MoMo form */}
                 {step === "confirm" && (
                   <form onSubmit={doMoMoPayment} className="space-y-3 md:space-y-4">
                     <h3 className="text-lg md:text-xl text-white font-semibold">Confirm & Pay</h3>
-
                     <div className="text-sm text-gray-100 mb-1">Item</div>
-                    <div className="bg-gray-100 rounded-md p-3 text-sm">
+                    <div className="bg-gray-100 rounded-md p-3 text-sm text-black">
                       <div className="flex justify-between">
                         <div>{paymentType === "watch" ? "Watch — 48 hours" : "Download — Keep forever"}</div>
                         <div className="font-semibold">{formatCurrency(moviePrice[paymentType], currency)}</div>
                       </div>
                     </div>
 
-                    {/* phone input */}
                     <div>
                       <label className="text-sm text-gray-300 block mb-2">MTN Mobile Number</label>
                       <input
                         type="tel"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+250788123456 or 0788123456"
+                        placeholder="0788*******"
                         className={`w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-gray-800 border text-white text-sm md:text-base ${
-                          formError ? "border-blue-500 focus:border-blue-500" : "border-gray-700 focus:border-blue-400"
+                          formError ? "border-red-500 focus:border-red-500" : "border-gray-700 focus:border-blue-400"
                         } focus:outline-none transition`}
                         disabled={processing}
                       />
                       {formError && (
-                        <p className="mt-2 text-xs text-blue-400 flex items-center gap-2">
+                        <p className="mt-2 text-xs text-red-400 flex items-center gap-2">
                           <AlertCircle className="w-4 h-4" /> {formError}
                         </p>
                       )}
@@ -573,7 +543,6 @@ export default function Payment() {
                   </form>
                 )}
 
-                {/* Processing */}
                 {step === "processing" && (
                   <div className="flex flex-col items-center justify-center gap-4 py-6 md:py-8">
                     <div className="inline-flex items-center justify-center w-12 md:w-14 h-12 md:h-14 rounded-full bg-gray-800">
@@ -584,7 +553,6 @@ export default function Payment() {
                   </div>
                 )}
 
-                {/* Verifying */}
                 {step === "verifying" && (
                   <div className="flex flex-col items-center justify-center gap-3 md:gap-4 py-6 md:py-8">
                     <div className="inline-flex items-center justify-center w-12 md:w-14 h-12 md:h-14 rounded-full bg-blue-500">
@@ -606,7 +574,6 @@ export default function Payment() {
                   </div>
                 )}
 
-                {/* Success */}
                 {step === "success" && (
                   <div className="space-y-3 text-center py-6 md:py-8">
                     <div className="mx-auto inline-flex items-center justify-center w-12 md:w-14 h-12 md:h-14 rounded-full bg-green-500">
@@ -614,7 +581,25 @@ export default function Payment() {
                     </div>
                     <div className="text-white font-semibold text-sm md:text-base">Payment successful!</div>
                     <div className="text-xs md:text-sm text-gray-300">{statusMessage}</div>
-                    <div className="text-xs text-gray-400">Transaction ID: {transactionId}</div>
+                    
+                    {/* 🔥 Show withdrawal info if processed */}
+                    {withdrawalsProcessed && currentTransaction?.withdrawals && (
+                      <div className="mt-4 p-3 bg-green-900/20 border border-green-700 rounded-lg">
+                        <div className="flex items-center gap-2 justify-center text-green-400 text-xs mb-2">
+                          <TrendingUp className="w-4 h-4" />
+                          <span className="font-semibold">Payouts Processed</span>
+                        </div>
+                        <div className="text-xs text-gray-300 space-y-1">
+                          <div>Filmmaker: {formatCurrency(currentTransaction.withdrawals.filmmaker.amount, currency)}</div>
+                          <div>Platform: {formatCurrency(currentTransaction.withdrawals.admin.amount, currency)}</div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {transactionId && (
+                      <div className="text-xs text-gray-400">Transaction: {transactionId}</div>
+                    )}
+                    
                     <div className="pt-4 flex gap-2 flex-col md:flex-row">
                       <button
                         onClick={() => navigate(`/payment-success/${transactionId}`)}
@@ -632,16 +617,15 @@ export default function Payment() {
                   </div>
                 )}
 
-                {/* Failed */}
                 {step === "failed" && (
                   <div className="space-y-3 text-center py-6 md:py-8">
-                    <div className="mx-auto inline-flex items-center justify-center w-12 md:w-14 h-12 md:h-14 rounded-full bg-blue-500">
+                    <div className="mx-auto inline-flex items-center justify-center w-12 md:w-14 h-12 md:h-14 rounded-full bg-red-500">
                       <X className="w-6 md:w-8 h-6 md:h-8 text-white" />
                     </div>
                     <div className="text-white font-semibold text-sm md:text-base">Payment failed</div>
                     <div className="text-xs md:text-sm text-gray-300">{statusMessage || formError}</div>
                     {transactionId && (
-                      <div className="text-xs text-gray-400">Transaction ID: {transactionId}</div>
+                      <div className="text-xs text-gray-400">Transaction: {transactionId}</div>
                     )}
                     <div className="pt-4 flex gap-2 flex-col md:flex-row">
                       <button

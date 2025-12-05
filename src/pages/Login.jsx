@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+// components/Login.js
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { login, verifyOTP, googleAuth } from '../store/slices/authSlice';
-import { Mail, Lock, Eye, EyeOff, AlertCircle, Shield } from 'lucide-react';
+import { getOrCreateDeviceFingerprint, getDeviceInfo } from '../utils/fingerprint';
+import { Mail, Lock, Eye, EyeOff, AlertCircle, Shield, Smartphone, Monitor, Tablet } from 'lucide-react';
+
 
 function Login() {
   const dispatch = useDispatch();
@@ -21,6 +24,30 @@ function Login() {
   const [otpError, setOtpError] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(0);
+  const [deviceFingerprint, setDeviceFingerprint] = useState('');
+  const [deviceInfo, setDeviceInfo] = useState(null);
+  const [showDeviceInfo, setShowDeviceInfo] = useState(false);
+
+  // Initialize fingerprint on component mount
+  useEffect(() => {
+    const initFingerprint = () => {
+      try {
+        const fingerprint = getOrCreateDeviceFingerprint();
+        const deviceData = getDeviceInfo();
+        
+        setDeviceFingerprint(fingerprint);
+        setDeviceInfo(deviceData);
+        
+        // Log device info for debugging (remove in production)
+        console.log('Device Fingerprint:', fingerprint.substring(0, 20) + '...');
+        console.log('Device Info:', deviceData);
+      } catch (error) {
+        console.error('Failed to generate fingerprint:', error);
+      }
+    };
+
+    initFingerprint();
+  }, []);
 
   const validateForm = () => {
     const errors = {};
@@ -65,7 +92,13 @@ function Login() {
       return;
     }
 
-    const result = await dispatch(login(formData));
+    // Include device fingerprint in login request
+    const loginData = {
+      ...formData,
+      deviceFingerprint: deviceFingerprint
+    };
+
+    const result = await dispatch(login(loginData));
     if (result.payload) {
       // If response includes OTP requirement, show sent confirmation first
       if (result.payload.requiresOTP || result.payload.message?.includes('OTP')) {
@@ -90,12 +123,19 @@ function Login() {
     }
 
     setOtpLoading(true);
-    const result = await dispatch(verifyOTP({
+    
+    // Include device fingerprint in OTP verification
+    const otpData = {
       email: formData.email,
-      otp: otp
-    }));
+      otp: otp,
+      deviceFingerprint: deviceFingerprint
+    };
+
+    const result = await dispatch(verifyOTP(otpData));
 
     if (result.type === verifyOTP.fulfilled.type) {
+      // Store device fingerprint in localStorage for future requests
+      localStorage.setItem('deviceFingerprint', deviceFingerprint);
       // OTP verification successful, redirect to home
       navigate('/');
     } else {
@@ -107,6 +147,22 @@ function Login() {
         if (errorPayload.remainingAttempts !== undefined) {
           setOtpError(`${errorPayload.message} (${errorPayload.remainingAttempts} attempts remaining)`);
         }
+        
+        // If device limit reached, show upgrade option
+        if (errorPayload.code === 'DEVICE_LIMIT_REACHED') {
+          setOtpError(
+            <span>
+              {errorPayload.message} 
+              <br />
+              <button 
+                onClick={() => navigate('/upgrade')}
+                className="text-blue-300 underline mt-1"
+              >
+                Upgrade to Premium
+              </button>
+            </span>
+          );
+        }
       } else {
         setOtpError('Invalid OTP');
       }
@@ -117,10 +173,14 @@ function Login() {
   const handleResendOtp = async () => {
     setOtpLoading(true);
     try {
+      // Include device fingerprint in resend request
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/resend-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email })
+        body: JSON.stringify({ 
+          email: formData.email,
+          deviceFingerprint: deviceFingerprint 
+        })
       });
 
       if (response.ok) {
@@ -136,9 +196,11 @@ function Login() {
           });
         }, 1000);
       } else {
-        setOtpError('Failed to resend OTP');
+        const errorData = await response.json();
+        setOtpError(errorData.message || 'Failed to resend OTP');
       }
     } catch (err) {
+      console.error('Error resending OTP:', err);
       setOtpError('Error resending OTP');
     }
     setOtpLoading(false);
@@ -152,17 +214,27 @@ function Login() {
 
   const handleGoogleLoginSuccess = async () => {
     try {
+      // Store fingerprint in session storage for Google OAuth redirect
+      sessionStorage.setItem('pendingDeviceFingerprint', deviceFingerprint);
       // Initiate Google OAuth flow
-      // This redirects to backend GET /api/auth/google
       await dispatch(googleAuth());
-      // Backend will handle OAuth flow and redirect after successful auth
     } catch (error) {
       console.error('Google login error:', error);
     }
   };
 
-  const handleGoogleLoginError = (error) => {
-    console.error('Google login failed:', error);
+  // Get device icon based on user agent
+  const getDeviceIcon = () => {
+    if (!deviceInfo) return <Smartphone className="w-4 h-4" />;
+    
+    const ua = deviceInfo.userAgent.toLowerCase();
+    if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) {
+      return <Smartphone className="w-4 h-4" />;
+    } else if (ua.includes('tablet') || ua.includes('ipad')) {
+      return <Tablet className="w-4 h-4" />;
+    } else {
+      return <Monitor className="w-4 h-4" />;
+    }
   };
 
   return (
@@ -176,6 +248,50 @@ function Login() {
           <p className="text-gray-400">
             {step === 'credentials' ? 'Welcome back to your favorite movies' : 'Verify your identity'}
           </p>
+          
+          {/* Device Info Badge */}
+          {deviceInfo && (
+            <div className="mt-4">
+              <button
+                onClick={() => setShowDeviceInfo(!showDeviceInfo)}
+                className="inline-flex items-center gap-2 px-3 py-1 bg-gray-800/50 border border-gray-700 rounded-full text-xs hover:bg-gray-800 transition-colors"
+              >
+                {getDeviceIcon()}
+                <span>Device: {deviceInfo.platform}</span>
+              </button>
+              
+              {showDeviceInfo && (
+                <div className="mt-2 p-3 bg-gray-900/80 border border-gray-700 rounded-lg text-xs text-left">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <span className="text-gray-400">Screen:</span>
+                      <div className="font-medium">{deviceInfo.screenResolution}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Language:</span>
+                      <div className="font-medium">{deviceInfo.language}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Timezone:</span>
+                      <div className="font-medium">{deviceInfo.timezone}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Browser:</span>
+                      <div className="font-medium truncate">
+                        {deviceInfo.userAgent.split(' ').slice(-2).join(' ')}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-700">
+                    <span className="text-gray-400">Fingerprint:</span>
+                    <div className="font-mono text-xs truncate">
+                      {deviceFingerprint.substring(0, 30)}...
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Step Indicator */}
@@ -253,13 +369,24 @@ function Login() {
               )}
             </div>
 
+            {/* Device Security Note */}
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <Shield className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-blue-300">
+                  <strong>Device Recognition:</strong> This device will be remembered for secure login.
+                  Free accounts allow 1 device, premium allows 2 devices.
+                </p>
+              </div>
+            </div>
+
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !deviceFingerprint}
               className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-600 text-black font-semibold py-2.5 rounded-lg transition-all duration-200"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Logging in...' : !deviceFingerprint ? 'Initializing...' : 'Login'}
             </button>
 
             {/* Forgot Password Link */}
@@ -280,7 +407,7 @@ function Login() {
             <button
               type="button"
               onClick={handleGoogleLoginSuccess}
-              disabled={loading}
+              disabled={loading || !deviceFingerprint}
               className="w-full bg-white hover:bg-gray-100 disabled:bg-gray-400 text-black font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -301,7 +428,7 @@ function Login() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              {loading ? 'Signing in...' : 'Continue with Google'}
+              {loading ? 'Signing in...' : !deviceFingerprint ? 'Loading...' : 'Continue with Google'}
             </button>
           </form>
         )}
@@ -345,9 +472,25 @@ function Login() {
             onSubmit={handleOtpSubmit}
             className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 space-y-6"
           >
+            {/* Device Info Banner */}
+            {deviceInfo && (
+              <div className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+                <div className="flex items-center gap-2">
+                  {getDeviceIcon()}
+                  <div>
+                    <div className="text-xs font-medium">{deviceInfo.platform}</div>
+                    <div className="text-xs text-gray-400">This device will be registered</div>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-400">
+                  {deviceInfo.screenResolution}
+                </div>
+              </div>
+            )}
+
             {/* OTP Info */}
-            <div className="flex items-center justify-center p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
-              <Shield className="w-5 h-5 text-blue-400 mr-2" />
+            <div className="flex items-center p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
+              <Shield className="w-5 h-5 text-blue-400 mr-3 flex-shrink-0" />
               <p className="text-sm text-blue-300">
                 We sent a 6-digit code to<br />
                 <strong>{formData.email}</strong>
@@ -358,7 +501,9 @@ function Login() {
             {otpError && (
               <div className="flex items-center gap-3 bg-blue-500/10 border border-blue-500/50 rounded-lg p-4">
                 <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
-                <p className="text-sm text-blue-400">{otpError}</p>
+                <div className="text-sm text-blue-400">
+                  {typeof otpError === 'string' ? otpError : otpError}
+                </div>
               </div>
             )}
 

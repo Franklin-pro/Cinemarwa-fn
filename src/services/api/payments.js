@@ -17,39 +17,69 @@ paymentsAxios.interceptors.request.use((config) => {
 });
 
 export const paymentsService = {
-  // MoMo Payment
+  // ====== PAYMENT ENDPOINTS ======
+  
+  // Process MoMo Payment (with automatic withdrawals)
   processMoMoPayment: (paymentData) =>
     paymentsAxios.post('/momo', paymentData),
   
   // Check MoMo payment status
   checkMoMoPaymentStatus: (transactionId) =>
     paymentsAxios.get(`/momo/status/${transactionId}`),
-
-  // Payment History
-  getPaymentHistory: (userId) =>
-    paymentsAxios.get(`/user/${userId}`),
-
-  getPaymentDetails: (transactionId) =>
-    paymentsAxios.get(`/transaction/${transactionId}`),
-
-  // Purchase Management
-  purchaseMovie: (movieId, type) =>
-    paymentsAxios.post('/purchase', { movieId, type }),
-
+  
+  // Process Stripe Payment
+  processStripePayment: (paymentData) =>
+    paymentsAxios.post('/stripe', paymentData),
+  
+  // Get payment details
+  getPaymentDetails: (paymentId) =>
+    paymentsAxios.get(`/${paymentId}`),
+  
+  // Get user's payment history
+  getPaymentHistory: (userId, params = {}) =>
+    paymentsAxios.get(`/user/${userId}`, { params }),
+  
+  // Confirm payment (manual - admin only)
+  confirmPayment: (paymentId, status) =>
+    paymentsAxios.patch(`/${paymentId}/confirm`, { status }),
+  
+  // Get movie analytics (filmmaker/admin)
+  getMovieAnalytics: (movieId) =>
+    paymentsAxios.get(`/movie/${movieId}/analytics`),
+  
+  // ====== WITHDRAWAL ENDPOINTS ======
+  
+  // Get user's withdrawal history
+  getWithdrawalHistory: (userId, params = {}) =>
+    paymentsAxios.get(`/withdrawals/user/${userId}`, { params }),
+  
+  // Get withdrawal details
+  getWithdrawalDetails: (withdrawalId) =>
+    paymentsAxios.get(`/withdrawals/${withdrawalId}`),
+  
+  // ====== LEGACY/ADDITIONAL ENDPOINTS ======
+  
+  // Purchase Management (if you have separate endpoints)
+  purchaseMovie: (movieId, type, paymentMethod = 'momo', paymentData = {}) =>
+    paymentsAxios.post('/purchase', { movieId, type, paymentMethod, ...paymentData }),
+  
+  // Download movie (if separate from purchase)
   downloadMovie: (movieId) =>
     paymentsAxios.post(`/download/${movieId}`),
-
-  // Filmmaker Revenue
+  
+  // Filmmaker Revenue (if you have these endpoints)
   getRevenue: (params) => 
     paymentsAxios.get('/revenue', { params }),
-
-  withdrawRevenue: (amount) =>
-    paymentsAxios.post('/withdraw', { amount }),
-
-  getWithdrawalHistory: () =>
-    paymentsAxios.get('/withdrawals'),
+  
+  // Manual withdrawal request (if needed)
+  withdrawRevenue: (amount, phoneNumber) =>
+    paymentsAxios.post('/withdraw', { amount, phoneNumber }),
+  
+  // Delete payment history (admin)
   deleteHistory: (transactionId) =>
     paymentsAxios.delete(`/transaction/${transactionId}`),
+  
+  // Get revenue history
   getRevenueHistory: () =>
     paymentsAxios.get('/revenue-history'),
 };

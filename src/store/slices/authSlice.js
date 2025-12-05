@@ -1,19 +1,33 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import authService from '../../services/api/auth';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Async Thunks
+// store/slices/authSlice.js - Update register thunk
 export const register = createAsyncThunk(
   'auth/register',
-  async (userData, { rejectWithValue }) => {
+  async ({ name, email, password, role, deviceFingerprint }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/register`, userData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      const response = await authService.register({ 
+        name, 
+        email, 
+        password, 
+        role,
+        deviceFingerprint 
+      });
+      
+      // Store token, user data, and fingerprint
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('deviceFingerprint', deviceFingerprint);
+      }
+      
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed');
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
